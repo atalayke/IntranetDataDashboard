@@ -1,0 +1,113 @@
+<html>
+<head>
+    <title>Web Apps Data Dashboard Mock-up</title>
+    <link rel="stylesheet" type="text/css" href="styles/dashboard_styles.css">   
+    <link rel='stylesheet' type='text/css' href='styles/bootstrap.min.css'>
+    <link rel='stylesheet' type='text/css' href='styles/daterangepicker.css'>
+    <script type="text/javascript" src="libs/jquery-3.2.1.min.js"></script>
+    <script type="text/javascript" src="libs/wsse.js"></script>
+    <script type="text/javascript" src="libs/marketing_cloud.js"></script>
+    <script type="text/javascript" src="libs/d3.min.js"></script>
+    <script type='text/javascript' src='libs/moment.min.js'></script>
+    <script type='text/javascript' src='libs/daterangepicker.js'></script>    
+</head>
+<body>
+    <h1>Web Apps Data Dashboard Mock-up</h1>
+    <p id="buttonSpace">
+        <button id="visitorsButton">Visitors</button>
+        <button id="pageViewsButton">Page Views</button>
+    </p>
+    <div id="resultSpace">
+        <script type='text/javascript' src='data/pieDataDaily.js'></script>
+        <script type='text/javascript' src='data/osDataDaily.js'></script>
+        <script type='text/javascript' src='data/browserDataDaily.js'></script>
+        <script type='text/javascript' src='data/hourlyData.js'></script>
+        <script type='text/javascript' src='data/deviceDataDaily.js'></script>
+        <script type='text/javascript' src='scripts/parseAdobeData.js'></script> 
+        <script type='text/javascript' src='scripts/barChartsHeader.js'></script>
+        <script type='text/javascript' src='scripts/genBarChart.js'></script>
+        <script type='text/javascript' src='scripts/genTable.js'></script>
+        <script type='text/javascript' src='scripts/updateTable.js'></script>
+        <script type='text/javascript' src='scripts/updateBarCharts.js'></script>
+        <script type="text/javascript" src='scripts/avgHourlyChart.js'></script>
+        <script type='text/javascript'> 
+            var currMetric;            
+        </script>
+   	</div>
+    <div id="pieChart">
+        <script type="text/javascript" src="scripts/genPieChart.js"></script>
+        <script type='text/javascript' src='scripts/updatePieChart.js'></script>
+    </div>
+    <div id="browserChart"></div>
+    <div id='osChart'></div>
+    <div id='hourlyChart'></div>
+    <div id='deviceChart'></div>
+    <div id='dataTable'></div>
+    <div id='dateRange'>
+    	<input type="text" name="daterange" value="07/22/2017 - 8/22/2017" />
+    	<script type="text/javascript">		
+		$(function() {
+		    $('input[name="daterange"]').daterangepicker({   
+                minDate : new Date(2017, 06, 22),
+                maxDate : new Date(2017, 07, 22)
+    		    }).on('apply.daterangepicker', 
+	       	    	function(ev, picker) {
+			     		updateVisualsTimeChange(picker.startDate._d, picker.endDate._d);
+                    });		    
+		});		
+		</script>
+    </div>
+    <script type='text/javascript'>
+        var visGen = false;
+
+        function genVisuals(metric) {
+            visGen = true;
+            totals = {};
+            totals['visits'] = pieData['totalVisits'];
+            totals['views'] = pieData['totalViews'];
+            genPieChart(pieData, metric);            
+            genTables(tableData, ['App', 'Raw', 'Perc'], ['Total Views', 'Total Visits'], metric, totals);
+            genBarChart(browserData, browserType, metric);
+            genBarChart(osData, osType, metric);
+            genBarChart(deviceData, deviceType, metric);
+            genHourlyChart(avgHourlyData, metric);            
+        }
+
+        function updateVisuals(metric) {
+            console.log(metric);
+            updatePieChart(pieDataDaily.report.data, metric);
+            totals = {};
+            totals['visits'] = pieData['totalVisits'];
+            totals['views'] = pieData['totalViews'];
+            updateTable(barGroup, pieDataDaily.report.data, ['App', 'Raw', 'Perc'], ['Total Views', 'Total Visits'], currMetric, totals);
+            updateBarChart(barGroup, currColor, browserType, browserData, metric);
+            updateBarChart(barGroup, currColor, osType, osData, metric);            
+            updateBarChart(barGroup, currColor, deviceType, deviceData, metric);
+            updateHourlyBarChart(barGroup, currColor, metric);
+            updateTable(barGroup, tableData, ['App', 'Raw', 'Perc'], ['Total Views', 'Total Visits'], metric);
+        }
+
+
+        $('#visitorsButton').click(function() {
+            console.log('visitors button pressed');
+            currMetric = 'visits';
+            if(visGen) {
+                updateVisuals('visits');
+            } else {
+                genVisuals('visits');                
+            }
+
+        });
+
+        $('#pageViewsButton').click(function() {
+            console.log('page views button pressed');
+            currMetric = 'views';
+            if(visGen) {
+                updateVisuals('views');
+            } else {
+                genVisuals('views');
+            }
+        });
+
+    </script>
+  </body>
