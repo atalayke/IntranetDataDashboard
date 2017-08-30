@@ -1,6 +1,4 @@
 function updatePieChart(data, metric) {
-    console.log(minDate);
-    console.log(maxDate);
     var currPieData = selectPieData(data, minDate, maxDate);
     pieData['totalVisits'] = currPieData['totalVisits'];
     pieData['totalViews'] = currPieData['totalViews'];    

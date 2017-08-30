@@ -1,25 +1,17 @@
+#lineChart {
+	position:absolute;
+	top:10px;
+	left:450px;
+	height:150px;
+	border:1px;
+}
+
 #pieChart {
 	position:absolute;
 	top:150px;
 	left:60px;
  	width:500px;
 	height: 400px;
-	border:1px;
-}
-
-#hourlyChart {
-	position:absolute;
-	top:600px;
-	left:30px;
-	height:300px;
-	border:1px;
-}
-
-#lineChart {
-	position:absolute;
-	top:10px;
-	left:450px;
-	height:150px;
 	border:1px;
 }
 
@@ -30,23 +22,31 @@
 	height:250px;
 }
 
+#hourlyChart {
+	position:absolute;
+	top:525px;
+	left:30px;
+	height:300px;
+	border:1px;
+}
+
 #osChart {
 	position:absolute;
-	top:600px;
+	top:525px;
 	left:550px;
 	height:250px;
 }
 
 #browserChart {
 	position:absolute;
-	top:1000px;
+	top:925px;
 	left:30px;
 	height:250px;
 }
 
 #deviceChart {
 	position:absolute;
-	top:1000px;
+	top:925px;
 	left:550px;
 	height:250px;
 }

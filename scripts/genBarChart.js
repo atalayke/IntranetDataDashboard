@@ -11,13 +11,6 @@ function genBarChart(data, type, metric) {
     var plotTitle = metric === 'visits' ? 'Overall Unique Visitors' : 'Overall Page Views';
     var total = metric === 'visits' ? initialData.tvs : initialData.tvs;
     initialData = initialData.data;
-    if(type.type === 'browser') {
-        browserType.views = data['totalViews'];
-    } else if(type.type === 'device') {
-        deviceType.views = data['totalViews'];
-    } else {
-        osType.views = data['totalViews'];
-    }    
     initialData = d3.entries(initialData);
     var plotBasics = barChartBasics(type.height); 
     var margin = plotBasics.margin,
@@ -27,6 +20,14 @@ function genBarChart(data, type, metric) {
         barPadding = plotBasics.barPadding
     ;
    
+    if(type.type === 'browser') {
+        browserType.views = data['totalViews'];
+    } else if(type.type === 'device') {
+        deviceType.views = data['totalViews'];
+    } else {
+        osType.views = data['totalViews'];
+    }
+
     //Create linear x scale
     var xScale = d3.scaleLinear()
         .domain([0, initialData.length])
@@ -76,8 +77,8 @@ function genBarChart(data, type, metric) {
     ;
 
     /*
-    Dictionary to keep track of whether a data point ought to have its numerical
-    value displayed above or below its corresponding rect
+        Dictionary to keep track of whether a data point ought to have its numerical
+        value displayed above or below its corresponding rect
     */
     var below = {};
     
@@ -86,7 +87,7 @@ function genBarChart(data, type, metric) {
         .text(function(d) {
             return formatAsInteger(d.value[metric]);
         })
-        .attr("text-anchor", "middle")    // Set x position to the left edge of each bar plus half the bar width
+        .attr("text-anchor", "middle")
                 .attr("x", function(d, i) {
             return (i * (width / initialData.length)) +
                         ((width / initialData.length - barPadding) / 2);

@@ -9,7 +9,7 @@ function generatePieData(data) {
     data[0].breakdown.forEach(function(entry) {
         var name = entry.name.split('.');
         var app = name[0].replace('https://', '');
-        if(!apps.includes(app)) {
+        if(apps.indexOf(app) === -1) {
             apps.push(app);
         }
     });
@@ -37,14 +37,12 @@ function generatePieData(data) {
 }
 
 function generateTableData(data, startDate, endDate) {
-//    var totalViews = 0;
-//    var totalVisits = 0;
-    console.log(startDate);
-    console.log(endDate);
+    //console.log(JSON.stringify(data));
     data[0].breakdown.forEach(function(entry) {
+    //data.forEach(function(entry) {
         var name = entry.name.split('.');
         var app = name[0].replace('https://', '');
-        if(!apps.includes(app)) {
+        if(apps.indexOf(app) === -1) {
             apps.push(app);
         }
     });
@@ -57,8 +55,10 @@ function generateTableData(data, startDate, endDate) {
         viewsVisits[entry]['visits'] = 0;
     });
     data.forEach(function(day) {       
-        var date = new Date(Date.parse(day.name));
-//        console.log(date);
+        console.log(JSON.stringify(day));
+        //var date = new Date(Date.parse(day.name));
+        var date = parseDate(day);
+        console.log(JSON.stringify(date));
         if(date >= startDate && date <= endDate) {  
             day.breakdown.forEach(function(app) {            
                 var name = app.name.split('.')
@@ -67,7 +67,7 @@ function generateTableData(data, startDate, endDate) {
                 viewsVisits[name]['visits'] += Number(app.counts[1]);
             });
         } else {
-            console.log('Date out of range');
+            console.log('Generating table data, date: ' + JSON.stringify(date) + ' out of range');
         }
     });
     return viewsVisits;  
@@ -152,59 +152,75 @@ function generateBarChartData(data, elm) {
     return viewsVisits;
 }
 
-function generateAvgHourlyData(data) {
-    var allApps = {};
-    allApps['all'] = {};
-    allApps['all']['views'] = {};
-    allApps['all']['visits'] = {};
+function generateAvgHourlyData(hrlyData, startDate, endDate) {
+    var allAppsHr = {};
+    allAppsHr['all'] = {};
+    allAppsHr['all']['views'] = {};
+    allAppsHr['all']['visits'] = {};
     var hours = [];
     var viewSum = 0;
     var visitSum = 0;
     var totalHours = 0;
+    var totalDays = 0;
     for(var i = 0; i < 24; i++) {
         hours.push(i.toString());
     }
     apps.forEach(function(app) {
-        allApps[app] = {};
-        allApps[app]['views'] = {};
-        allApps[app]['visits'] = {};
+        allAppsHr[app] = {};
+        allAppsHr[app]['views'] = {};
+        allAppsHr[app]['visits'] = {};
         hours.forEach(function(hr) {
-            allApps[app]['views'][hr] = 0;
-            allApps[app]['visits'][hr] = 0;
-            allApps['all']['views'][hr] = 0;
-            allApps['all']['visits'][hr] = 0;
+            allAppsHr[app]['views'][hr] = 0;
+            allAppsHr[app]['visits'][hr] = 0;
+            allAppsHr['all']['views'][hr] = 0;
+            allAppsHr['all']['visits'][hr] = 0;
         })
     });
-    data.forEach(function(hour) {
-        totalHours += 1;
-        hr = JSON.stringify(hour.hour);
-        hour.breakdown.forEach(function(app) {
-            var appName = app.name.split('.')
-            appName = appName[0].replace('https://', '');
-            var views = Number(app.counts[0]);
-            var visits = Number(app.counts[1]);
-            viewSum = viewSum + views;
-            visitSum = visitSum + visits;
-            allApps[appName]['views'][hr] = allApps[appName]['views'][hr] + views;
-            allApps[appName]['visits'][hr] = allApps[appName]['visits'][hr] + visits;
-            allApps['all']['views'][hr] = allApps['all']['views'][hr] + views;
-            allApps['all']['visits'][hr] = allApps['all']['visits'][hr] + visits;
-        });
+/*
+    Get array of dates, iterate over these
+*/  
+    var dates = Object.keys(hrlyData);
+    dates.forEach(function(day) {    
+        totalDays += 1;
+        var currDate = new Date(day);
+        if(currDate >= startDate && currDate <= endDate) {   
+            //Date is in range, iterate over each hour, views/visits
+            var hrs = Object.keys(hrlyData[day]);
+            console.log(hrs);
+            hrs.forEach(function(hour) {
+                totalHours += 1;
+                var applications = Object.keys(hrlyData[day][hour]);
+                //Iterate over list of apps, accumulate views/visits
+                applications.forEach(function(app) {
+                    var currApp = hrlyData[day][hour][app];
+                    var appName = currApp.name.split('.')
+                    appName = appName[0].replace('https://', '');
+                    var views = Number(currApp.counts[0]);
+                    var visits = Number(currApp.counts[1]);
+                    viewSum = viewSum + views;
+                    visitSum = visitSum + visits;
+                    allAppsHr[appName]['views'][hour] = allAppsHr[appName]['views'][hour] + views;
+                    allAppsHr[appName]['visits'][hour] = allAppsHr[appName]['visits'][hour] + visits;
+                    allAppsHr['all']['views'][hour] = allAppsHr['all']['views'][hour] + views;
+                    allAppsHr['all']['visits'][hour] = allAppsHr['all']['visits'][hour] + visits;                    
+                });
+            });
+        } else {
+        }
     });
-
-    var numDays = totalHours / 24;
+    var numDays = totalHours / 23;
     apps.forEach(function(app) {
         hours.forEach(function(hour) {
-            allApps[app]['views'][hour] = allApps[app]['views'][hour] / numDays;
-            allApps[app]['visits'][hour] = allApps[app]['visits'][hour] / numDays;
+            allAppsHr[app]['views'][hour] = allAppsHr[app]['views'][hour] / numDays;
+            allAppsHr[app]['visits'][hour] = allAppsHr[app]['visits'][hour] / numDays;
          });
     });
     hours.forEach(function(hour) {
-        allApps['all']['views'][hour] = allApps['all']['views'][hour] / numDays;
-        allApps['all']['visits'][hour] = allApps['all']['visits'][hour] / numDays;
+        allAppsHr['all']['views'][hour] = allAppsHr['all']['views'][hour] / numDays;
+        allAppsHr['all']['visits'][hour] = allAppsHr['all']['visits'][hour] / numDays;
     });
 
-    return allApps;
+    return allAppsHr;
 }
 
 function updateViewsVisits(date, appName, elementName, countType, type, viewsVisits) {    
@@ -219,6 +235,7 @@ function parseDate(date) {
     var year = date.year,
         month = date.month - 1,
         day = date.day;
+    console.log(JSON.stringify(new Date(year, month, day)));
     return new Date(year, month, day);
 }
 
@@ -235,15 +252,15 @@ function parseElementName(type, elm) {
             browserName = rawName[0] + " " + rawName[1];
         }    
         //Determine if this is an "allowable" browser
-        if(!allowableBrowsers.includes(browserName)) {
-            return 'Other';
+        if(allowableBrowsers.indexOf(browserName) === -1) {
+            return 'Other';        
         } else {
             return browserName;
         }
     } else if(elm === 'os') {
         var osName = type.name;        
-        if(!allowableOS.includes(osName)) {
-            osName = 'Other';
+        if(allowableOS.indexOf(osName) === -1) {
+            osName = 'Other';    
         }
         return osName;
     } else {
@@ -261,5 +278,6 @@ var pieData = generatePieData(pieDataDaily.report.data);
 var tableData = generateTableData(pieDataDaily.report.data, new Date(2017, 6, 22), new Date(2017, 7, 22));
 var browserData = generateBarChartData(browserDataDaily.report.data, 'browser');
 var osData = generateBarChartData(osDataDaily.report.data, 'os');
-var deviceData = generateBarChartData(deviceDataDaily.report.data, 'device');
-var avgHourlyData = generateAvgHourlyData(hourlyData.report.data);
+var deviceData = generateBarChartData(deviceDataDaily.report.data, 'device'); 
+//var avgHourlyData = generateAvgHourlyData(hourlyDataTotal.report.data, new Date(2017, 6, 22), new Date(2017, 7, 22));
+var avgHourlyData = generateAvgHourlyData(hourlyDataTotal, new Date(2017, 6, 22), new Date(2017, 7, 22));

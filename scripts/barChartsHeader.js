@@ -64,13 +64,15 @@ Update the bar charts
 function updateVisualsTimeChange(start, end) {
 	minDate = new Date(Date.parse(start));
 	maxDate = new Date(Date.parse(end));      
+    //hourlyData = generateAvgHourlyData(hourlyDataTotal.report.data, minDate, maxDate);
     updatePieChart(pieDataDaily.report.data, currMetric);
     totals = {};
     totals['visits'] = pieData['totalVisits'];
-    totals['views'] = pieData['totalViews'];
-    updateTable(barGroup, pieDataDaily.report.data, ['App', 'Raw', 'Perc'], ['Total Views', 'Total Visits'], currMetric, totals);
+    totals['views'] = pieData['totalViews'];    
+    updateTables(barGroup, pieDataDaily.report.data, ['App', 'Raw', 'Perc'], ['Total Views', 'Total Visits'], currMetric, totals);
 	updateBarChart(barGroup, currColor, browserType, browserData, currMetric);
     updateBarChart(barGroup, currColor, osType, osData, currMetric);
+    updateHourlyBarChart(barGroup, currColor, currMetric);
 }
 /*
 Returns an object with parameters relevant to chart type (browser or OS)
@@ -94,7 +96,7 @@ function selectBarDataHourly(group, dataset, startDate, endDate) {
     var totalVisits = 0;    
     for (x in dataset) {
         if(dataset[x].key===group){                    
-            for(hour in dataset[x].value.views) {
+            for(hour in dataset[x].value.views) {                
                 ds[hour] = {};
                 ds[hour]['views'] = dataset[x].value.views[hour];
             }

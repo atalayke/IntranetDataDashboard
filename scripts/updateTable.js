@@ -1,4 +1,4 @@
-function updateTable(barGroup, data, appCols, totCols, metric, totals) {
+function updateTables(barGroup, data, appCols, totCols, metric, totals) {
 	var tableData = generateTableData(data, minDate, maxDate); 
 	tableData = d3.entries(tableData);	
 	var title = metric === 'views' ? ' Page Views' : ' Unique Visitors';

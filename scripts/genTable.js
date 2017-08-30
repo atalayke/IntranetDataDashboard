@@ -1,6 +1,6 @@
 var tableBackgrounds = [/*'#fff1d1',*/ '#dfebef', '#fae3cc', '#e1e8cc', '#f2d0d8', '#ccdfe3', '#d2dde8'];
 function genTables(data, appCols, totCols, metric, totals) {
-	
+	console.log(JSON.stringify(data));
 	function genTotalsTable(cols, metric, totals) {		
 		var title = metric === 'visits' ? ' Unique Visitors' : ' Page Views';
 		var totTable = d3.select('#dataTable')
@@ -41,7 +41,6 @@ function genTables(data, appCols, totCols, metric, totals) {
 
 	function genAppTable(data, cols, metric, totals) {
 		var appData = d3.entries(data);
-		console.log(appData);
 		var appTable = d3.select('#dataTable')
 			.append('table')
 			.attr('class', 'table table-hover table-bordered')
@@ -76,7 +75,6 @@ function genTables(data, appCols, totCols, metric, totals) {
 					d3.select(this).style('background-color', tableBackgrounds[i]);
 				})
 				.on('mouseout', function(d, i) {
-					console.log('mouseout');
 					d3.select(this).style('background-color', 'white');
 				})
 		;
@@ -99,6 +97,7 @@ function genTables(data, appCols, totCols, metric, totals) {
 }
 
 function getValFromCol(data, col, row, metric, totals) {	
+	console.log(JSON.stringify(row));
 	if(col === 'App') {
 		console.log(row);
 		return row.key;
