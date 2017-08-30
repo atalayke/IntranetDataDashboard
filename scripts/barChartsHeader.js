@@ -11,7 +11,7 @@ var browserType = setTypeParams('browser');
 var osType = setTypeParams('os');
 var deviceType = setTypeParams('device');
 /*
-Filter the data given the desired start/end date
+    Filter the data given the desired start/end date
 */
 function selectBarData(dataset, startDate, endDate, grp) {
     var ds = {};    
@@ -41,7 +41,7 @@ function selectBarData(dataset, startDate, endDate, grp) {
 }
 
 /*
-Return basic parameters determining shape of the plot
+    Return basic parameters determining shape of the plot
 */
 function barChartBasics(hgt) {
     var margin = {top: 30, right: 5, bottom: 20, left: 50},
@@ -59,12 +59,11 @@ function barChartBasics(hgt) {
     };
 }
 /*
-Update the bar charts
+    Update bar charts with updated timeframe
 */
 function updateVisualsTimeChange(start, end) {
 	minDate = new Date(Date.parse(start));
 	maxDate = new Date(Date.parse(end));      
-    //hourlyData = generateAvgHourlyData(hourlyDataTotal.report.data, minDate, maxDate);
     updatePieChart(pieDataDaily.report.data, currMetric);
     totals = {};
     totals['visits'] = pieData['totalVisits'];
@@ -75,7 +74,7 @@ function updateVisualsTimeChange(start, end) {
     updateHourlyBarChart(barGroup, currColor, currMetric);
 }
 /*
-Returns an object with parameters relevant to chart type (browser or OS)
+    Returns an object with parameters relevant to chart type (browser or OS)
 */
 function setTypeParams(plotType) {
 	if(plotType === 'browser') {
@@ -89,7 +88,9 @@ function setTypeParams(plotType) {
                 views : osTotalViews, visits : osTotalVisits, height : 300};
 	}
 }
-
+/*
+    Select metrics for selected group
+*/
 function selectBarDataHourly(group, dataset, startDate, endDate) {
     var ds = {};    
     var totalViews = 0;

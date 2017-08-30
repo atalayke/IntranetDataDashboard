@@ -61,10 +61,8 @@
 .slice {
    font-size: 14pt;
    fill: "#D0D0D0";
-   /*font-weight: bold;*/
 }
 
-/*for line chart*/
 .axis path, .axis line {
     fill: none;
     stroke: black;
@@ -83,7 +81,6 @@
 input {
 	width:200px;
 }
-
 
 .axis text {
     font-weight:bold;

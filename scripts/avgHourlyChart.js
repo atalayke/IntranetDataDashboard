@@ -1,3 +1,6 @@
+/*
+	Handles initial creation of average hourly metrics chart
+*/
 function genHourlyChart(data, metric) {
 	hourlyData = d3.entries(data);
 	minDate = new Date(2017, 6, 22);    
@@ -11,7 +14,9 @@ function genHourlyChart(data, metric) {
 	height = hourlyBasics.height + 50,
 	colorBar = hourlyBasics.colorBar,
 	barPadding = hourlyBasics.barPadding;    
-	
+	/*
+		Create x and y scales based on number of data items and extent of data values
+	*/
 	var xScale = d3.scaleLinear()
 		.domain([0, firstHourlyData.length])
 		.range([0, width])
@@ -21,7 +26,9 @@ function genHourlyChart(data, metric) {
 		.domain([0, d3.max(firstHourlyData, function(d) { return Number(d.value[metric]); })])
 		.range([height - 50, 0])
 	;
-
+	/*
+		Set svg parameters, append to appropriate div
+	*/
 	var svg = d3.select("#hourlyChart")
 		.append("svg")
 		.attr("width", width + margin.left + margin.right)
@@ -33,7 +40,9 @@ function genHourlyChart(data, metric) {
 		.append("g")
 		.attr("transform", "translate(" + margin.left + "," + margin.top + ")")
 	;
-
+	/*
+		Append bars to chart
+	*/
 	plot.selectAll("rect")
 		.data(firstHourlyData)
 		.enter()
@@ -50,14 +59,17 @@ function genHourlyChart(data, metric) {
 	})
 		.attr("fill", initColor)
 	;
-
-
+	/*
+		Append x-axis
+	*/
 	var xLabels = svg
 		.append("g")
 		.attr("transform", "translate(" + margin.left + "," + 
 			(margin.top + height - 50)  + ")")
 		;
-
+	/*
+		Append labels to x-axis 
+	*/
 	xLabels.selectAll("text.xAxis")
 		.data(firstHourlyData)
 		.enter()
@@ -74,10 +86,9 @@ function genHourlyChart(data, metric) {
 		.attr("y", 15)
 		.attr("class", "xAxis")
 	;
-
-/*
-	Append title
-*/
+	/*
+		Append title
+	*/
 	svg.append("text")
 		.attr("x", (width + margin.left + margin.right)/2)
 		.attr("y", 15)
@@ -85,16 +96,16 @@ function genHourlyChart(data, metric) {
 		.attr("text-anchor", "middle")
 		.text("Overall Average " + title + " Per Hour")
 	;
-
-/*
-	Add AM/PM labels
-*/
+	/*
+		Add AM/PM labels
+	*/
 	svg.append("text")
 		.attr("x", (width / 4) + margin.left)
 		.attr('y', 325)
 		.attr("class", "xAxis")
 		.text('AM')
 	;
+
 	svg.append("text")
 		.attr("x", (width - (width / 4) + margin.left))
 		.attr('y', 325)
@@ -102,7 +113,6 @@ function genHourlyChart(data, metric) {
 		.text('PM')
 	;
 }
-
 /*
 	Handles hourly average barchart update
 */
@@ -117,6 +127,9 @@ function updateHourlyBarChart(group, colorChosen, metric) {
 	height = basics.height,
 	colorBar = basics.colorBar,
 	barPadding = basics.barPadding;    
+	/*
+		Create x and y scales based on number of data items and extent of data values
+	*/
 	var xScale = d3.scaleLinear()
 		.domain([0, currentHourlyData.length])
 		.range([0, width])
@@ -126,13 +139,19 @@ function updateHourlyBarChart(group, colorChosen, metric) {
 		.domain([0, d3.max(currentHourlyData, function(d) { return Number(d.value[metric]); })])
 		.range([height,0])
 	;
-
+	/*
+		Select preexisting svg element
+	*/
 	var svg = d3.select("#hourlyChart svg");
-
+	/*
+		Associate plot with new updated data
+	*/
 	var plot = d3.select("#hourlyBarChartPlot")
 		.datum(currentHourlyData)
 	;
-
+	/*
+		Update bar chart bars
+	*/
 	plot.selectAll("rect")
 		.data(currentHourlyData)
 		.transition()
@@ -149,7 +168,9 @@ function updateHourlyBarChart(group, colorChosen, metric) {
 		})
 		.attr("fill", colorChosen)
 	;
-	
+	/*
+		Update plot title
+	*/
 	group = (group === 'all') ? 'Overall' : group;
 	svg.selectAll("text.title")
 		.attr("x", (width + margin.left + margin.right)/2)

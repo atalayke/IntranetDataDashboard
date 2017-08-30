@@ -1,24 +1,46 @@
 var tableBackgrounds = [/*'#fff1d1',*/ '#dfebef', '#fae3cc', '#e1e8cc', '#f2d0d8', '#ccdfe3', '#d2dde8'];
+/*
+	Initially generates Total and Apps tables
+*/
 function genTables(data, appCols, totCols, metric, totals) {
-	console.log(JSON.stringify(data));
+	/*
+		Generate totals table
+	*/
 	function genTotalsTable(cols, metric, totals) {		
+		/*
+			Select appropriate metric
+		*/
 		var title = metric === 'visits' ? ' Unique Visitors' : ' Page Views';
-		var totTable = d3.select('#dataTable')
+		/*
+			Append table element to appropriate div
+		*/
+		var totTable = d3.select('#dataTable')		
 			.append('table')
 			.attr('class', 'table table-hover table-bordered')
 			.attr('id', 'totTable')
 		;	
+		/*
+			Append head element to totals table
+		*/
 		var totHead = totTable.append('thead')
 			.attr('class', 'thead-default')
 			.attr('id', 'totHead')
 		;
+		/*
+			Append body element to totals table
+		*/
 		var totBody = totTable.append('tbody').attr('id', 'totBody'); 
-
+		/*
+			Append header with title
+		*/
 		totHead.append('tr')
 			.append('th')
 			.text('Total ' + title)
 		;
-
+		/*
+			Append single row with title, on click, handle bar charts
+			to reflect metrics for all applications
+		*/
 		totBody.append('tr')
 			.on('click', function() {
 					if(!(barGroup === 'all')) {
@@ -38,19 +60,32 @@ function genTables(data, appCols, totCols, metric, totals) {
 				.text(totals[metric])
 		;
 	}
-
+	/*
+		Initially generate applications counts table
+	*/	
 	function genAppTable(data, cols, metric, totals) {
 		var appData = d3.entries(data);
+		/*
+			Append table element to appropriate div
+		*/
 		var appTable = d3.select('#dataTable')
 			.append('table')
 			.attr('class', 'table table-hover table-bordered')
 			.attr('id', 'appTable')
 		;			
+		/*
+			Append head element to apps table
+		*/
 		var appHead = appTable.append('thead')
 			.attr('class', 'thead-default');
+		/*
+			Append body to apps table
+		*/
 		var appBody = appTable.append('tbody').attr('id', 'appBody');
 		var currCol;
-
+		/*
+			Append elements from cols array to header of apps table
+		*/
 		appHead.append('tr')
 			.selectAll('th')
 				.data(cols)
@@ -58,7 +93,10 @@ function genTables(data, appCols, totCols, metric, totals) {
 				.append('th')
 				.text(function(d) { return d; })
 		;
-
+		/*
+			Append rows to body of apps table, on click, update bar charts to
+			reflect metrics of selected application
+		*/
 		var rows = appBody.selectAll('tr')
 				.data(appData)
 				.enter()
@@ -78,7 +116,9 @@ function genTables(data, appCols, totCols, metric, totals) {
 					d3.select(this).style('background-color', 'white');
 				})
 		;
-
+		/*
+			Append appropriate values to body of apps table
+		*/
 		var cells = rows.selectAll('td')
 			.data(function(row) {			
 				return cols.map(function(col) {
@@ -95,7 +135,9 @@ function genTables(data, appCols, totCols, metric, totals) {
 	genTotalsTable(totCols, metric, totals);
 	genAppTable(data, appCols, metric, totals);
 }
-
+/*
+	Return cell value given row/col/metric
+*/
 function getValFromCol(data, col, row, metric, totals) {	
 	console.log(JSON.stringify(row));
 	if(col === 'App') {

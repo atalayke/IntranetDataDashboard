@@ -1,5 +1,7 @@
+/*
+    Generate initial bar chart given the desired type/metric
+*/
 function genBarChart(data, type, metric) {
-    //Preliminary fields/data    
     initData = data;
     plotData = d3.entries(data);
     minDate = new Date(2017, 6, 22);    
@@ -19,7 +21,9 @@ function genBarChart(data, type, metric) {
         colorBar = plotBasics.colorBar,
         barPadding = plotBasics.barPadding
     ;
-   
+    /*
+        Select appropriate metric type
+    */
     if(type.type === 'browser') {
         browserType.views = data['totalViews'];
     } else if(type.type === 'device') {
@@ -27,32 +31,35 @@ function genBarChart(data, type, metric) {
     } else {
         osType.views = data['totalViews'];
     }
-
-    //Create linear x scale
+    /*
+        Create x and y scales based on number of data items and extent of data values
+    */
     var xScale = d3.scaleLinear()
         .domain([0, initialData.length])
         .range([0, width])
     ;
 
-    // Create linear y scale
     var yScale = d3.scaleLinear()
         .domain([0, d3.max(initialData, function(d) { return Number(d.value.views); })])
         .range([height, 0])
     ;
-
-    //Create SVG element for the chart, append all elements
+    /*
+        Create SVG element for the chart, append all elements
+    */
     var svg = d3.select(type.div)
         .append("svg")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
         .attr("id",type.svg)
     ;
-
+        
     var plot = svg
         .append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
     ;
-
+    /*
+        Append bars to bar chart
+    */
     plot.selectAll("rect")
         .data(initialData)
         .enter()        
@@ -69,8 +76,9 @@ function genBarChart(data, type, metric) {
         })
         .attr("fill", initColor)        
     ;
-
-    // Add raw counts to plot
+    /*
+        Append raw frequencies to bars
+    */
     var plotText = plot.selectAll("text")
         .data(initialData)
         .enter()
@@ -81,8 +89,9 @@ function genBarChart(data, type, metric) {
         value displayed above or below its corresponding rect
     */
     var below = {};
-    
-    //Append text displaying raw frequencies
+    /*
+        Append text displaying raw frequencies
+    */
     plotText.append("text")
         .text(function(d) {
             return formatAsInteger(d.value[metric]);
@@ -108,8 +117,9 @@ function genBarChart(data, type, metric) {
             return fill;
         })
     ;
-
-    // Add percentages to plot
+    /*    
+        Add percentages to plot
+    */
     plotText.append("text")
         .text(function(d) {
             return formatAsPercentage1Dec(Number(d.value[metric]) / total);
@@ -135,14 +145,17 @@ function genBarChart(data, type, metric) {
             return fill;
         })
     ;
-
-    // Add x labels to chart
+    /*
+        Append x-axis to plot
+    */
     var xLabels = svg
         .append("g")
         .attr("transform", "translate(" + margin.left + "," +
                 (margin.top + height)  + ")")
     ;
-
+    /*
+        Append text to x-axis
+    */
     xLabels.selectAll("text.xAxis")
         .data(initialData)
         .enter()
@@ -156,8 +169,9 @@ function genBarChart(data, type, metric) {
         .attr("y", 15)
         .attr("class", "xAxis")
     ;
-
-    // Title
+    /*
+        Append title to plot
+    */
     svg.append("text")
         .attr("x", (width + margin.left + margin.right)/2)
         .attr("y", 15)

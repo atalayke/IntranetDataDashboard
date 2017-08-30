@@ -2,7 +2,7 @@
 <html lang='en-us'>
 <head>
     <meta charset='utf-8'>
-    <title>Web Apps Data Dashboard Mock-up</title>
+    <title>Web Apps Data Dashboard</title>
     <link rel="stylesheet" type="text/css" href="styles/dashboard_styles.css">   
     <link rel='stylesheet' type='text/css' href='styles/bootstrap.min.css'>
     <link rel='stylesheet' type='text/css' href='styles/daterangepicker.css'>
@@ -14,7 +14,7 @@
     <script type='text/javascript' src='libs/daterangepicker.js'></script>    
 </head>
 <body>
-    <h1>Web Apps Data Dashboard Mock-up</h1>
+    <h1>Web Apps Data Dashboard</h1>
     <p id="buttonSpace">
         <button id="visitorsButton">Visitors</button>
         <button id="pageViewsButton">Page Views</button>
@@ -23,7 +23,6 @@
         <script type='text/javascript' src='../data/pieDataDaily.js'></script>
         <script type='text/javascript' src='../data/osDataDaily.js'></script>
         <script type='text/javascript' src='../data/browserDataDaily.js'></script>
-<!--        <script type='text/javascript' src='../data/hourlyData.js'></script>  -->
         <script type='text/javascript' src='../data/hourlyDataPy.js'></script>
         <script type='text/javascript' src='../data/deviceDataDaily.js'></script>
         <script type='text/javascript' src='scripts/parseAdobeData.js'></script> 
@@ -65,7 +64,10 @@
     </div>
     <script type='text/javascript'>
         var visGen = false;
-
+        /*
+            genVisuals is called after the first button press of either "visitors"
+            or "page views"  (i.e. generates first visuals)
+        */
         function genVisuals(metric) {
             visGen = true;
             totals = {};
@@ -78,9 +80,11 @@
             genBarChart(deviceData, deviceType, metric);
             genHourlyChart(avgHourlyData, metric);            
         }
-
+        /*
+            updateVisuals is called after "visitors" or "page views" is pressed while
+            visualizations are already present (i.e. to update existing visuals)
+        */
         function updateVisuals(metric) {
-            console.log(metric);
             updatePieChart(pieDataDaily.report.data, metric);
             totals = {};
             totals['visits'] = pieData['totalVisits'];
@@ -89,7 +93,6 @@
             updateBarChart(barGroup, currColor, browserType, browserData, metric);
             updateBarChart(barGroup, currColor, osType, osData, metric);            
             updateBarChart(barGroup, currColor, deviceType, deviceData, metric);
-
             updateHourlyBarChart(barGroup, currColor, metric);
         }
 

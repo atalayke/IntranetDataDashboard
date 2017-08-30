@@ -2,7 +2,9 @@ var apps = [];
 var allowableBrowsers = ['Google Chrome', 'Internet Explorer', 'Safari', 'Other'];
 var allowableOS = ['Windows 7', 'Windows 10', 'OS X 10.11', 'Other'];
 var allowableDev = ['Desktop', 'Tablet', 'Mobile Phone', 'Media Player'];
-
+/*
+    Transform raw pie chart data into a form easily handled by d3.js
+*/
 function generatePieData(data) {
     var totalViews = 0;
     var totalVisits = 0;
@@ -35,11 +37,11 @@ function generatePieData(data) {
     viewsVisits['totalVisits'] = totalVisits;
     return viewsVisits;
 }
-
+/*
+    Transform raw table data into a form easily handled by d3.js
+*/
 function generateTableData(data, startDate, endDate) {
-    //console.log(JSON.stringify(data));
     data[0].breakdown.forEach(function(entry) {
-    //data.forEach(function(entry) {
         var name = entry.name.split('.');
         var app = name[0].replace('https://', '');
         if(apps.indexOf(app) === -1) {
@@ -56,7 +58,6 @@ function generateTableData(data, startDate, endDate) {
     });
     data.forEach(function(day) {       
         console.log(JSON.stringify(day));
-        //var date = new Date(Date.parse(day.name));
         var date = parseDate(day);
         console.log(JSON.stringify(date));
         if(date >= startDate && date <= endDate) {  
@@ -72,7 +73,9 @@ function generateTableData(data, startDate, endDate) {
     });
     return viewsVisits;  
 }
-
+/*
+    Return appropriate whitelist given type
+*/
 function getWhiteList(type) {
     if(type === 'browser') {
         return allowableBrowsers;
@@ -82,16 +85,17 @@ function getWhiteList(type) {
         return allowableOS;
     }
 }
-
+/*
+    Transform raw bar chart data into a form easily handled by d3.js
+*/
 function generateBarChartData(data, elm) {
     var viewsVisits = {};    
     var totalViews = 0;    
     var totalVisits = 0;    
     var date;    
     var whiteList = getWhiteList(elm);
-
     /*
-    Initialize apps/browsers views/visits counts to 0 for all Dates in the current range
+        Initialize apps/browsers views/visits counts to 0 for all Dates in the current range
     */
     data.forEach(function(date) {
         date = parseDate(date);
@@ -109,13 +113,14 @@ function generateBarChartData(data, elm) {
             })
         });
     });
-
     var currDate;
     data.forEach(function(day) {
         currDate = parseDate(day);
         totalViews += Number(day.breakdownTotal[0]);
         totalVisits += Number(day.breakdownTotal[1]);
-        //Iterate through apps, updating visits/views by element        
+        /*
+            Iterate through apps, updating visits/views by element        
+        */
         day.breakdown.forEach(function(app) {
             if(Number(app.counts[0]) > 0) {
                 app.breakdown.forEach(function(type) {
@@ -147,11 +152,11 @@ function generateBarChartData(data, elm) {
     });
     viewsVisits['totalViews'] = totalViews + 0.0;
     viewsVisits['totalVisits'] = totalVisits + 0.0;
-    console.log(elm);
-    console.log(viewsVisits);
     return viewsVisits;
 }
-
+/*
+    Transform raw houlry data into a form easily handled by d3.js
+*/
 function generateAvgHourlyData(hrlyData, startDate, endDate) {
     var allAppsHr = {};
     allAppsHr['all'] = {};
@@ -176,9 +181,9 @@ function generateAvgHourlyData(hrlyData, startDate, endDate) {
             allAppsHr['all']['visits'][hr] = 0;
         })
     });
-/*
-    Get array of dates, iterate over these
-*/  
+    /*
+        Get array of dates, iterate over these
+    */  
     var dates = Object.keys(hrlyData);
     dates.forEach(function(day) {    
         totalDays += 1;
@@ -219,10 +224,11 @@ function generateAvgHourlyData(hrlyData, startDate, endDate) {
         allAppsHr['all']['views'][hour] = allAppsHr['all']['views'][hour] / numDays;
         allAppsHr['all']['visits'][hour] = allAppsHr['all']['visits'][hour] / numDays;
     });
-
     return allAppsHr;
 }
-
+/*
+    Updates views or visits counts
+*/
 function updateViewsVisits(date, appName, elementName, countType, type, viewsVisits) {    
     var typeIndex = countType === 'views' ? 0 : 1;
     var update = viewsVisits[date][appName][elementName][countType] === undefined ? 
@@ -230,15 +236,19 @@ function updateViewsVisits(date, appName, elementName, countType, type, viewsVis
             viewsVisits[date][appName][elementName][countType] + Number(type.counts[typeIndex]);             
     return update;
 }
-
+/*
+    Return a date object given a data element
+*/
 function parseDate(date) {
     var year = date.year,
         month = date.month - 1,
         day = date.day;
-    console.log(JSON.stringify(new Date(year, month, day)));
     return new Date(year, month, day);
 }
-
+/*
+    Given a type and an element, return the appropriate
+    name
+*/
 function parseElementName(type, elm) {
     if(elm === 'browser') {
         var rawName = type.name.split(' ');    
@@ -279,5 +289,4 @@ var tableData = generateTableData(pieDataDaily.report.data, new Date(2017, 6, 22
 var browserData = generateBarChartData(browserDataDaily.report.data, 'browser');
 var osData = generateBarChartData(osDataDaily.report.data, 'os');
 var deviceData = generateBarChartData(deviceDataDaily.report.data, 'device'); 
-//var avgHourlyData = generateAvgHourlyData(hourlyDataTotal.report.data, new Date(2017, 6, 22), new Date(2017, 7, 22));
 var avgHourlyData = generateAvgHourlyData(hourlyDataTotal, new Date(2017, 6, 22), new Date(2017, 7, 22));

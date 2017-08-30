@@ -1,3 +1,6 @@
+/*
+    Update an existing bar chart
+*/
 function updateBarChart(grp, colorChosen, type, data, metric) {
     currColor = colorChosen;    
     var tempData = d3.entries(data);
@@ -15,6 +18,10 @@ function updateBarChart(grp, colorChosen, type, data, metric) {
         colorBar = plotBasics.colorBar,
         barPadding = plotBasics.barPadding
     ;
+    /*
+        Update the x and y scales given the number of elements and the 
+        range of values
+    */
     var xScale = d3.scaleLinear()
         .domain([0, currentData.length])
         .range([0, width])
@@ -26,14 +33,17 @@ function updateBarChart(grp, colorChosen, type, data, metric) {
             })])
         .range([height,0])
     ;
-
+    /*
+        Select the appropriate svg elements and bind it to the updated
+        data
+    */
     var svg = d3.select(type.div + " svg");   
     var plot = d3.select("#" + type.svg)
         .datum(currentData)
     ;
-/*
-    Update bar size on barchart
-*/    
+    /*
+        Update bar size on barchart
+    */    
     plot.selectAll("rect")
         .data(currentData)
         .transition()
@@ -50,9 +60,9 @@ function updateBarChart(grp, colorChosen, type, data, metric) {
         })
         .attr("fill", currColor)
     ;
-/*
-    Update text dissplaying raw frequencies
-*/
+    /*
+        Update text dissplaying raw frequencies
+    */
     var below = {};
     plot.selectAll("text.yAxisRaw")
         .data(currentData)
@@ -82,10 +92,9 @@ function updateBarChart(grp, colorChosen, type, data, metric) {
             return fill;
         })
     ;
-
-/*
-    Update text displaying percentages
-*/
+    /*
+        Update text displaying percentages
+    */
     plot.selectAll("text.yAxisPerc")
         .data(currentData)
         .transition()
@@ -113,13 +122,12 @@ function updateBarChart(grp, colorChosen, type, data, metric) {
             return fill;
         })
     ;
-
-/*
-    Append bar chart title - switch statement below for case that group is 'all'
-    (should display 'Overall' instead of 'all')
-*/
+    /*
+        Append bar chart title - switch statement below for case that group is 'all'
+        (should display 'Overall' instead of 'all')
+    */
     var currGroup = (barGroup === 'all') ? 'Overall' : barGroup;
-    svg.selectAll("text.title") // target the text element(s) which has a title class defined
+    svg.selectAll("text.title")
         .attr("x", (width + margin.left + margin.right)/2)
         .attr("y", 15)
         .attr("class","title")
