@@ -28,7 +28,7 @@ function updateTables(barGroup, data, appCols, totCols, metric, totals) {
 	var totTable = d3.select('#totBody')
 		.selectAll('tr')
 		.select('td')
-		.text(totals[metric])
+		.text(formatAsInteger(totals[metric]))
 	;
 	/*
 		Update Total table title (say this three times fast)

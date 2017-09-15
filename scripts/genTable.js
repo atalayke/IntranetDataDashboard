@@ -57,7 +57,7 @@ function genTables(data, appCols, totCols, metric, totals) {
 				d3.select(this).style('background-color', 'white');
 			})
 			.append('td')
-				.text(totals[metric])
+				.text(formatAsInteger(totals[metric]))
 		;
 	}
 	/*
@@ -146,6 +146,6 @@ function getValFromCol(data, col, row, metric, totals) {
 	} else if(col === 'Perc') {
 		return formatAsPercentage1Dec(row.value[metric] / totals[metric]);
 	} else {
-		return row.value[metric];
+		return formatAsInteger(row.value[metric]);
 	}
 }
