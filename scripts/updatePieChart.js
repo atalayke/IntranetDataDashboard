@@ -56,6 +56,13 @@ function updatePieChart(data, metric) {
         } else {
           return '';
         }
+      })
+      .attr('visibility', function(d) {
+         if(d.endAngle - d.startAngle > .2) {
+            return 'visible';
+         } else {
+            return 'hidden';
+         }
       })      
    	; 
     /*
@@ -67,7 +74,8 @@ function updatePieChart(data, metric) {
         return "translate(" + arcFinal.centroid(d) + ")";
         })
       .text(function(d) { 
-        if((d.endAngle - d.startAngle) > 0.3) {
+        console.log(d.endAngle - d.startAngle);
+        if((d.endAngle - d.startAngle) > .45) {
           return formatAsInteger(d.data.value[metric]);  
         } else {
           return "";
@@ -83,7 +91,7 @@ function updatePieChart(data, metric) {
         return "translate(" + arcFinal.centroid(d) + ")";
         })
       .text(function(d) { 
-        if((d.endAngle - d.startAngle) > 0.5) {
+        if((d.endAngle - d.startAngle) > .45) {
           return formatAsPercentage1Dec(d.data.value[metric] / totals);                
         } else {
           return '';
@@ -100,11 +108,11 @@ function updatePieChart(data, metric) {
       .duration(750)
       .attr('points', function(d) {
         console.log(d);
-        if(d.data.value[metric] > 0) {
-          return [arc.centroid(d), arcFinal.centroid(d)];        
+        if(d.data.value[metric] > 0 && (d.endAngle - d.startAngle) > 0.2) { 
+          return [arc.centroid(d), arcFinal.centroid(d)];               
         } else {
           return [arc.centroid(d), arc.centroid(d)];
-        }
+        }       
     })
     /*
       Update pie char title

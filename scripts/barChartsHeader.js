@@ -64,11 +64,11 @@ function barChartBasics(hgt) {
 function updateVisualsTimeChange(start, end) {
 	minDate = new Date(Date.parse(start));
 	maxDate = new Date(Date.parse(end));      
-    updatePieChart(pieDataDaily.report.data, currMetric);
+    updatePieChart(pieDataAllApps.report.data, currMetric);
     totals = {};
     totals['visits'] = pieData['totalVisits'];
     totals['views'] = pieData['totalViews'];    
-    updateTables(barGroup, pieDataDaily.report.data, ['App', 'Raw', 'Perc'], ['Total Views', 'Total Visits'], currMetric, totals);
+    updateTables(barGroup, pieDataAllApps.report.data, ['App', 'Raw', 'Perc'], ['Total Views', 'Total Visits'], currMetric, totals);
 	updateBarChart(barGroup, currColor, browserType, browserData, currMetric);
     updateBarChart(barGroup, currColor, osType, osData, currMetric);
     updateHourlyBarChart(barGroup, currColor, currMetric);

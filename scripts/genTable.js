@@ -10,11 +10,11 @@ function genTables(data, appCols, totCols, metric, totals) {
 		/*
 			Select appropriate metric
 		*/
-		var title = metric === 'visits' ? ' Unique Visitors' : ' Page Views';
+		var title = metric === 'visits' ? ' Unq. Vis.' : ' Page Views';
 		/*
 			Append table element to appropriate div
 		*/
-		var totTable = d3.select('#dataTable')		
+		var totTable = d3.select('#dataTableTotal')		
 			.append('table')
 			.attr('class', 'table table-hover table-bordered')
 			.attr('id', 'totTable')
@@ -77,7 +77,8 @@ function genTables(data, appCols, totCols, metric, totals) {
 			Append head element to apps table
 		*/
 		var appHead = appTable.append('thead')
-			.attr('class', 'thead-default');
+			.attr('class', 'thead-default');			
+
 		/*
 			Append body to apps table
 		*/
@@ -123,14 +124,13 @@ function genTables(data, appCols, totCols, metric, totals) {
 			.data(function(row) {			
 				return cols.map(function(col) {
 					var val = getValFromCol(data, col, row, metric, totals);
-					console.log(val);
 					currCol = col;
 					return { column : col, value : val };
 				})
 			})
 			.enter()
 			.append('td')
-			.text(function(d) { console.log(d); return d.value; })		
+			.text(function(d) { return d.value; })		
 	}	
 	genTotalsTable(totCols, metric, totals);
 	genAppTable(data, appCols, metric, totals);
@@ -139,11 +139,9 @@ function genTables(data, appCols, totCols, metric, totals) {
 	Return cell value given row/col/metric
 */
 function getValFromCol(data, col, row, metric, totals) {	
-	console.log(JSON.stringify(row));
 	if(col === 'App') {
-		console.log(row);
 		return row.key;
-	} else if(col === 'Perc') {
+	} else if(col === '%') {
 		return formatAsPercentage1Dec(row.value[metric] / totals[metric]);
 	} else {
 		return formatAsInteger(row.value[metric]);

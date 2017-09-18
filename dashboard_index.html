@@ -20,11 +20,15 @@
         <button id="pageViewsButton">Page Views</button>
     </p>
     <div id="resultSpace">
-        <script type='text/javascript' src='../data/pieDataDaily.js'></script>
-        <script type='text/javascript' src='../data/osDataDaily.js'></script>
-        <script type='text/javascript' src='../data/browserDataDaily.js'></script>
+        <!--<script type='text/javascript' src='../data/pieDataDaily.js'></script>-->
+        <script type='text/javascript' src='../data/pieDataAllApps.js'></script>
+        <!--<script type='text/javascript' src='../data/osDataDaily.js'></script>-->
+        <script type='text/javascript' src='../data/osDataAllApps.js'></script>
+        <!--<script type='text/javascript' src='../data/browserDataDaily.js'></script>-->
+        <script type='text/javascript' src='../data/browserDataAllApps.js'></script>
         <script type='text/javascript' src='../data/hourlyDataPy.js'></script>
-        <script type='text/javascript' src='../data/deviceDataDaily.js'></script>
+        <!--<script type='text/javascript' src='../data/deviceDataDaily.js'></script>-->
+        <script type='text/javascript' src='../data/deviceDataAllApps.js'></script>
         <script type='text/javascript' src='scripts/parseAdobeData.js'></script> 
         <script type='text/javascript' src='scripts/barChartsHeader.js'></script>
         <script type='text/javascript' src='scripts/genBarChart.js'></script>
@@ -47,6 +51,7 @@
     <div id='osChart'></div>
     <div id='hourlyChart'></div>
     <div id='deviceChart'></div>
+    <div id='dataTableTotal'></div>
     <div id='dataTable'></div>
     <div id='dateRange'></div>
     	<input type="text" name="daterange" value="07/22/2017 - 8/22/2017" />
@@ -85,11 +90,11 @@
             visualizations are already present (i.e. to update existing visuals)
         */
         function updateVisuals(metric) {
-            updatePieChart(pieDataDaily.report.data, metric);
+            updatePieChart(pieDataAllApps.report.data, metric);
             totals = {};
             totals['visits'] = pieData['totalVisits'];
             totals['views'] = pieData['totalViews'];
-            updateTables(barGroup, pieDataDaily.report.data, appHeaders, totalHeaders, currMetric, totals);
+            updateTables(barGroup, pieDataAllApps.report.data, appHeaders, totalHeaders, currMetric, totals);
             updateBarChart(barGroup, currColor, browserType, browserData, metric);
             updateBarChart(barGroup, currColor, osType, osData, metric);            
             updateBarChart(barGroup, currColor, deviceType, deviceData, metric);

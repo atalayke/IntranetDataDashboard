@@ -15,11 +15,19 @@
 	border:1px;
 }
 
-#dataTable {
+#dataTableTotal {
 	position:absolute;
 	top:160px;
 	left:550px;
-	height:250px;
+	height:100px;
+}
+
+#dataTable {
+	position:absolute;
+	top:260px;
+	left:550px;
+	height:200px;
+/*	overflow:auto;*/
 }
 
 #hourlyChart {
@@ -98,8 +106,8 @@ input {
 .title {
     font-size: 14px;
 	font-weight: bold;
-}
 
+}
 .title_total {
 	font-size: 13px;
 }
@@ -115,18 +123,50 @@ input {
 }
 
 polyline {
-	opacity: .2;
+	opacity: .15;
 	stroke: black;
 	stroke-width: 1.5px;
 	fill:none;
 }
 
-
+/*
 table {
 	font-family: Verdana;
-	font-size: 14px;
+	font-size: 14px;	
+	/*overflow:auto;
+}
+
+thead > tbody {
+	display: block;
+	/*overflow:auto;
+}
+
+tbody {
+	overflow-y: auto;
+	overflow-x: hidden;
 }
 
 td {
 	padding-left: 10px;
+}
+*/
+table {
+    width: 436px; /* 140px * 5 column + 16px scrollbar width */
+    border-spacing: 0;
+}
+
+tbody, thead tr { display: block; }
+
+/*tbody*/#appBody {
+    height: 200px;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+tbody td, thead th {
+    width: 156px;
+}
+
+thead th:last-child {
+    width: 156px; /* 140px + 16px scrollbar width */
 }

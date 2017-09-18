@@ -114,9 +114,10 @@ function genPieChart(data, metric) {
     /*
         Append application name to arc
     */
-    arcs.filter(function(d) { return d.endAngle - d.startAngle > .2; })
+    arcs//.filter(function(d) { return d.endAngle - d.startAngle > .2; })
         .append("svg:text")
         .attr("dy", "0.35em")
+        .attr('dx', '0.25em')
         .attr("text-anchor", "middle")
         .attr("class", "label")
         .attr("transform", function(d) { 
@@ -130,12 +131,19 @@ function genPieChart(data, metric) {
                 return '';
             }
         })
+        .attr('visibility', function(d) {
+            if(d.endAngle - d.startAngle > .2) {
+                return 'visible';
+            } else {
+                return 'hidden';
+            }
+        })
     ;
     /*
         Append raw frequency to arc
     */
     arcs.filter(function(d) { 
-            return d.endAngle - d.startAngle > .2; 
+            return d.endAngle - d.startAngle > .45; 
         })
         .append("svg:text")
         .attr("dy", "0.35em")
@@ -150,7 +158,7 @@ function genPieChart(data, metric) {
         Append percentage to arc
     */
     arcs.filter(function(d) { 
-            return d.endAngle - d.startAngle > .2; 
+            return d.endAngle - d.startAngle > .45; 
         })
         .append("svg:text")
         .attr("dy", "1.35em")
@@ -199,7 +207,7 @@ function genPieChart(data, metric) {
         .enter()
         .append('polyline')    
         .attr('points', function(d) {
-            if(d.data.value[metric] > 0) { 
+            if((d.data.value[metric] > 0) && ((d.endAngle - d.startAngle) > 0.2)) { 
                 return [arc.centroid(d), arcFinal.centroid(d)];               
             } else {
                 return [arc.centroid(d), arc.centroid(d)];
@@ -239,12 +247,19 @@ function selectPieData(dataset, startDate, endDate) {
         var date = new Date(day.year, day.month - 1, day.day);
         if(date >= startDate && date <= endDate) {
             day.breakdown.forEach(function(app) {            
-                var name = app.name.split('.')
-                name = name[0].replace('https://', '');
+                name = parseAppName(app.name);
+                if(name !== '') {
+                    viewsVisits[name]['views'] += Number(app.counts[0]);
+                    viewsVisits[name]['visits'] += Number(app.counts[1]);
+                    totalViews += Number(app.counts[0]);
+                    totalVisits += Number(app.counts[1]);
+                }
+                /*
                 viewsVisits[name]['views'] += Number(app.counts[0]);
                 viewsVisits[name]['visits'] += Number(app.counts[1]);
                 totalViews += Number(app.counts[0]);
                 totalVisits += Number(app.counts[1]);
+                */
             });                           
         }
     });    

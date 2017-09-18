@@ -4,7 +4,7 @@
 function updateTables(barGroup, data, appCols, totCols, metric, totals) {
 	var tableData = generateTableData(data, minDate, maxDate); 
 	tableData = d3.entries(tableData);	
-	var title = metric === 'views' ? ' Page Views' : ' Unique Visitors';
+	var title = metric === 'views' ? ' Page Views' : ' Unq. Vis.';
 	/*
 		Update values in the Applications Table
 	*/
@@ -13,9 +13,9 @@ function updateTables(barGroup, data, appCols, totCols, metric, totals) {
 		.data(tableData)
 		.selectAll('td')
 		.data(function(row) {			
-				return appCols.map(function(col) {
+				return appHeaders.map(function(col) {
+					console.log(col);
 					var val = getValFromCol(data, col, row, metric, totals);
-					console.log(val);
 					currCol = col;
 					return { column : col, value : val };
 				})

@@ -1,6 +1,7 @@
 var apps = [];
 var allowableBrowsers = ['Google Chrome', 'Internet Explorer', 'Safari', 'Other'];
-var allowableOS = ['Windows 7', 'Windows 10', 'OS X 10.11', 'Other'];
+var allowableOS = ['Windows 7', 'Windows 10', 'OS X', 'Other'];
+var allowableOSRaw = ['windows 7', 'windows 10', 'os x 10.11', 'os x 10.10', 'Other'];
 var allowableDev = ['Desktop', 'Tablet', 'Mobile Phone', 'Media Player'];
 /*
     Transform raw pie chart data into a form easily handled by d3.js
@@ -8,13 +9,29 @@ var allowableDev = ['Desktop', 'Tablet', 'Mobile Phone', 'Media Player'];
 function generatePieData(data) {
     var totalViews = 0;
     var totalVisits = 0;
+    data.forEach( function(datum) {
+        datum.breakdown.forEach(function(entry) {
+            //console.log(entry.name);
+            var app = parseAppName(entry.name);
+            //var app = name[0].replace('https://', '');
+            //var app = name[0] + name[1];
+            if( (apps.indexOf(app) === -1) && (app !== '')) {
+                apps.push(app);
+            }        
+        });
+    });
+    /*
     data[0].breakdown.forEach(function(entry) {
+        console.log(entry.name);
         var name = entry.name.split('.');
         var app = name[0].replace('https://', '');
+        //var app = name[0] + name[1];
         if(apps.indexOf(app) === -1) {
             apps.push(app);
-        }
+        }        
     });
+    */
+    console.log(apps);
     var viewsVisits = {}
     apps.forEach(function(entry) {
         viewsVisits[entry] = {};
@@ -23,19 +40,67 @@ function generatePieData(data) {
         viewsVisits[entry]['views'] = 0;
         viewsVisits[entry]['visits'] = 0;
     });
+    console.log(viewsVisits);
     data.forEach(function(day) {       
         day.breakdown.forEach(function(app) {            
-            var name = app.name.split('.')
-            name = name[0].replace('https://', '');
+            //var name = app.name.split('.')
+            //name = name[0].replace('https://', '');
+            var name = parseAppName(app.name);
+            if(name !== '') {
+                viewsVisits[name]['views'] += Number(app.counts[0]);
+                viewsVisits[name]['visits'] += Number(app.counts[1]);
+                totalViews += Number(app.counts[0]);
+                totalVisits += Number(app.counts[1]);
+            }
+            /*
             viewsVisits[name]['views'] += Number(app.counts[0]);
             viewsVisits[name]['visits'] += Number(app.counts[1]);
             totalViews += Number(app.counts[0]);
             totalVisits += Number(app.counts[1]);
+            */
         });
     });
     viewsVisits['totalViews'] = totalViews;
     viewsVisits['totalVisits'] = totalVisits;
     return viewsVisits;
+}
+
+function parseAppName(name) {
+    if(name) {
+        var root = name.split('.')[0].replace('https://', '');    
+        switch(root) {
+            case 'csosmember':
+                return 'CSOS Member';
+            case 'internal':
+                return 'ITG';        
+            case 'healthyeating':
+                return 'Healthy Eating';
+            case 'iaspnhlbiadmin':
+                return 'IASP Admin';
+            case 'webapp':
+                return 'Web App';
+            case 'brtpugadmin':
+                return 'BRTPUG Admin';
+            case 'oedadmin':
+                return 'OED Admin';
+            case 'consultantaccess':
+                return 'Consultant Access';
+            case 'trac':
+            case 'brtpug':
+            case 'csos':
+            case 'iasp':
+            case 'ids':            
+            case 'grasp':
+            case 'mtagym':
+            case 'oed':
+            case 'teac':
+                return root.toUpperCase();
+            default:
+                return '';        
+        }
+    } else {
+        return '';
+    }
 }
 /*
     Transform raw table data into a form easily handled by d3.js
@@ -57,15 +122,18 @@ function generateTableData(data, startDate, endDate) {
         viewsVisits[entry]['visits'] = 0;
     });
     data.forEach(function(day) {       
-        console.log(JSON.stringify(day));
+        //console.log(JSON.stringify(day));
         var date = parseDate(day);
-        console.log(JSON.stringify(date));
+        //console.log(JSON.stringify(date));
         if(date >= startDate && date <= endDate) {  
             day.breakdown.forEach(function(app) {            
-                var name = app.name.split('.')
-                name = name[0].replace('https://', '');
-                viewsVisits[name]['views'] += Number(app.counts[0]);
-                viewsVisits[name]['visits'] += Number(app.counts[1]);
+                //var name = app.name.split('.')
+                //name = name[0].replace('https://', '');
+                var name = parseAppName(app.name);
+                if(name !== '') {
+                    viewsVisits[name]['views'] += Number(app.counts[0]);
+                    viewsVisits[name]['visits'] += Number(app.counts[1]);
+                }
             });
         } else {
             console.log('Generating table data, date: ' + JSON.stringify(date) + ' out of range');
@@ -88,6 +156,7 @@ function getWhiteList(type) {
 /*
     Transform raw bar chart data into a form easily handled by d3.js
 */
+var totalViewsVisitsCurr = [0, 0];
 function generateBarChartData(data, elm) {
     var viewsVisits = {};    
     var totalViews = 0;    
@@ -115,23 +184,29 @@ function generateBarChartData(data, elm) {
     });
     var currDate;
     data.forEach(function(day) {
+        //console.log(day);
         currDate = parseDate(day);
+        /*
         totalViews += Number(day.breakdownTotal[0]);
         totalVisits += Number(day.breakdownTotal[1]);
+        */
         /*
             Iterate through apps, updating visits/views by element        
         */
         day.breakdown.forEach(function(app) {
-            if(Number(app.counts[0]) > 0) {
+            //console.log(app);
+            //if(Number(app.counts[0]) > 0) {
+                var appName = parseAppName(app.name);
                 app.breakdown.forEach(function(type) {
                     //Get appname in a usable format
+                    /*
                     var appName = app.name.split('.');
                     appName = appName[0].replace('https://', '');
-
+                    */
                     //Get elementname in a usable format         \                    
-                    var elementName = parseElementName(type, elm);
-
-                    //Update cumulative views for this date / element
+                    var elementName = parseElementName(type, elm);            
+                    if(elementName) {
+                                            //Update cumulative views for this date / element
                     viewsVisits[currDate]['all'][elementName]['views'] = 
                                 updateViewsVisits(currDate, 'all', elementName, 'views', type, viewsVisits);
 
@@ -145,13 +220,19 @@ function generateBarChartData(data, elm) {
 
                     //Update visits for this date / app/ element
                     viewsVisits[currDate][appName][elementName]['visits'] = 
-                                updateViewsVisits(currDate, appName, elementName, 'visits', type, viewsVisits);                                        
+                                updateViewsVisits(currDate, appName, elementName, 'visits', type, viewsVisits);                                                                
+                    } else {
+                        console.log(type);
+                        console.log(elementName);
+                    }
                 });
-            }
+            //}
         });    
     });
-    viewsVisits['totalViews'] = totalViews + 0.0;
-    viewsVisits['totalVisits'] = totalVisits + 0.0;
+    viewsVisits['totalViews'] = totalViewsVisitsCurr[0] + 0.0;
+    viewsVisits['totalVisits'] = totalViewsVisitsCurr[1] + 0.0;
+    totalViewsVisitsCurr[0] = 0;
+    totalViewsVisitsCurr[1] = 0;
     return viewsVisits;
 }
 /*
@@ -191,7 +272,7 @@ function generateAvgHourlyData(hrlyData, startDate, endDate) {
         if(currDate >= startDate && currDate <= endDate) {   
             //Date is in range, iterate over each hour, views/visits
             var hrs = Object.keys(hrlyData[day]);
-            console.log(hrs);
+            //console.log(hrs);
             hrs.forEach(function(hour) {
                 totalHours += 1;
                 var applications = Object.keys(hrlyData[day][hour]);
@@ -233,7 +314,8 @@ function updateViewsVisits(date, appName, elementName, countType, type, viewsVis
     var typeIndex = countType === 'views' ? 0 : 1;
     var update = viewsVisits[date][appName][elementName][countType] === undefined ? 
             Number(type.counts[typeIndex]) : 
-            viewsVisits[date][appName][elementName][countType] + Number(type.counts[typeIndex]);             
+            viewsVisits[date][appName][elementName][countType] + Number(type.counts[typeIndex]);
+    totalViewsVisitsCurr[typeIndex] += Number(type.counts[typeIndex]);             
     return update;
 }
 /*
@@ -251,42 +333,61 @@ function parseDate(date) {
 */
 function parseElementName(type, elm) {
     if(elm === 'browser') {
+        //console.log(type);
         var rawName = type.name.split(' ');    
         var browserName;           
         //Determine browser type
-        if(rawName[0] === 'Safari') {
+        if(rawName[0] === 'safari') {
             browserName = 'Safari';
-        } else if(rawName[1] === 'Internet') {
+        } else if(rawName[1] === 'internet') {
             browserName = 'Internet Explorer';
-        } else {
-            browserName = rawName[0] + " " + rawName[1];
+        } else if(rawName[0] === 'google'){
+            //browserName = rawName[0] + " " + rawName[1];
+            browserName = 'Google Chrome';
         }    
         //Determine if this is an "allowable" browser
         if(allowableBrowsers.indexOf(browserName) === -1) {
             return 'Other';        
-        } else {
+        } else {            
             return browserName;
         }
     } else if(elm === 'os') {
         var osName = type.name;        
-        if(allowableOS.indexOf(osName) === -1) {
-            osName = 'Other';    
+        if(allowableOSRaw.indexOf(osName) === -1) {
+            return 'Other';   
+        } else {
+            var rawName = osName.split(' ');
+            if(rawName[0] === 'windows') {
+                if(rawName[1] === '10') {
+                    return 'Windows 10';
+                } else {
+                    return 'Windows 7';
+                }
+            } else if(rawName[0] === 'os') {
+                return 'OS X';
+            } else {
+                return 'Other';
+            }
         }
-        return osName;
-    } else {
+    } else {     
         if(type.name === 'Gaming Console') {
             return 'Media Player';
         } else if(type.name === 'Other') {
             return 'Desktop';
         } else {
             return type.name;
-        }
+        }    
     }
 }
 
-var pieData = generatePieData(pieDataDaily.report.data);  
-var tableData = generateTableData(pieDataDaily.report.data, new Date(2017, 6, 22), new Date(2017, 7, 22));
-var browserData = generateBarChartData(browserDataDaily.report.data, 'browser');
-var osData = generateBarChartData(osDataDaily.report.data, 'os');
-var deviceData = generateBarChartData(deviceDataDaily.report.data, 'device'); 
+//var pieData = generatePieData(pieDataDaily.report.data);  
+var pieData = generatePieData(pieDataAllApps.report.data);  
+//var tableData = generateTableData(pieDataDaily.report.data, new Date(2017, 6, 22), new Date(2017, 7, 22));
+var tableData = generateTableData(pieDataAllApps.report.data, new Date(2017, 6, 22), new Date(2017, 7, 22));
+//var browserData = generateBarChartData(browserDataDaily.report.data, 'browser');
+var browserData = generateBarChartData(browserDataAllApps.report.data, 'browser');
+//var osData = generateBarChartData(osDataDaily.report.data, 'os');
+var osData = generateBarChartData(osDataAllApps.report.data, 'os');
+//var deviceData = generateBarChartData(deviceDataDaily.report.data, 'device'); 
+var deviceData = generateBarChartData(deviceDataAllApps.report.data, 'device'); 
 var avgHourlyData = generateAvgHourlyData(hourlyDataTotal, new Date(2017, 6, 22), new Date(2017, 7, 22));
