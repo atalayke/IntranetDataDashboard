@@ -14,13 +14,12 @@ function updateTables(barGroup, data, appCols, totCols, metric, totals) {
 		.selectAll('td')
 		.data(function(row) {			
 				return appHeaders.map(function(col) {
-					console.log(col);
 					var val = getValFromCol(data, col, row, metric, totals);
 					currCol = col;
 					return { column : col, value : val };
 				})
 			})
-			.text(function(d) { console.log(d); return d.value; })
+			.text(function(d) { return d.value; })
 	;		
 	/*
 		Update values in the Total table

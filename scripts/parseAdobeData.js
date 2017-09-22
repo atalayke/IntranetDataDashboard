@@ -1,8 +1,13 @@
 var apps = [];
+var curApps = [];
 var allowableBrowsers = ['Google Chrome', 'Internet Explorer', 'Safari', 'Other'];
 var allowableOS = ['Windows 7', 'Windows 10', 'OS X', 'Other'];
 var allowableOSRaw = ['windows 7', 'windows 10', 'os x 10.11', 'os x 10.10', 'Other'];
 var allowableDev = ['Desktop', 'Tablet', 'Mobile Phone', 'Media Player'];
+
+var csvBrowsers = {};
+var csvOS = {};
+var csvDev = {};
 /*
     Transform raw pie chart data into a form easily handled by d3.js
 */
@@ -10,27 +15,13 @@ function generatePieData(data) {
     var totalViews = 0;
     var totalVisits = 0;
     data.forEach( function(datum) {
-        datum.breakdown.forEach(function(entry) {
-            //console.log(entry.name);
+        datum.breakdown.forEach(function(entry) {       
             var app = parseAppName(entry.name);
-            //var app = name[0].replace('https://', '');
-            //var app = name[0] + name[1];
             if( (apps.indexOf(app) === -1) && (app !== '')) {
                 apps.push(app);
             }        
         });
     });
-    /*
-    data[0].breakdown.forEach(function(entry) {
-        console.log(entry.name);
-        var name = entry.name.split('.');
-        var app = name[0].replace('https://', '');
-        //var app = name[0] + name[1];
-        if(apps.indexOf(app) === -1) {
-            apps.push(app);
-        }        
-    });
-    */
     console.log(apps);
     var viewsVisits = {}
     apps.forEach(function(entry) {
@@ -43,8 +34,6 @@ function generatePieData(data) {
     console.log(viewsVisits);
     data.forEach(function(day) {       
         day.breakdown.forEach(function(app) {            
-            //var name = app.name.split('.')
-            //name = name[0].replace('https://', '');
             var name = parseAppName(app.name);
             if(name !== '') {
                 viewsVisits[name]['views'] += Number(app.counts[0]);
@@ -52,12 +41,6 @@ function generatePieData(data) {
                 totalViews += Number(app.counts[0]);
                 totalVisits += Number(app.counts[1]);
             }
-            /*
-            viewsVisits[name]['views'] += Number(app.counts[0]);
-            viewsVisits[name]['visits'] += Number(app.counts[1]);
-            totalViews += Number(app.counts[0]);
-            totalVisits += Number(app.counts[1]);
-            */
         });
     });
     viewsVisits['totalViews'] = totalViews;
@@ -122,13 +105,9 @@ function generateTableData(data, startDate, endDate) {
         viewsVisits[entry]['visits'] = 0;
     });
     data.forEach(function(day) {       
-        //console.log(JSON.stringify(day));
         var date = parseDate(day);
-        //console.log(JSON.stringify(date));
         if(date >= startDate && date <= endDate) {  
             day.breakdown.forEach(function(app) {            
-                //var name = app.name.split('.')
-                //name = name[0].replace('https://', '');
                 var name = parseAppName(app.name);
                 if(name !== '') {
                     viewsVisits[name]['views'] += Number(app.counts[0]);
@@ -184,49 +163,33 @@ function generateBarChartData(data, elm) {
     });
     var currDate;
     data.forEach(function(day) {
-        //console.log(day);
         currDate = parseDate(day);
-        /*
-        totalViews += Number(day.breakdownTotal[0]);
-        totalVisits += Number(day.breakdownTotal[1]);
-        */
         /*
             Iterate through apps, updating visits/views by element        
         */
         day.breakdown.forEach(function(app) {
-            //console.log(app);
-            //if(Number(app.counts[0]) > 0) {
                 var appName = parseAppName(app.name);
                 app.breakdown.forEach(function(type) {
-                    //Get appname in a usable format
-                    /*
-                    var appName = app.name.split('.');
-                    appName = appName[0].replace('https://', '');
-                    */
                     //Get elementname in a usable format         \                    
                     var elementName = parseElementName(type, elm);            
                     if(elementName) {
                                             //Update cumulative views for this date / element
                     viewsVisits[currDate]['all'][elementName]['views'] = 
                                 updateViewsVisits(currDate, 'all', elementName, 'views', type, viewsVisits);
-
                     //Update cumulative visits for this date / element
                     viewsVisits[currDate]['all'][elementName]['visits'] = 
                                 updateViewsVisits(currDate, 'all', elementName, 'visits', type, viewsVisits);
-
                     //Update views for this date / app / element
                     viewsVisits[currDate][appName][elementName]['views'] = 
                                 updateViewsVisits(currDate, appName, elementName, 'views', type, viewsVisits);
-
                     //Update visits for this date / app/ element
                     viewsVisits[currDate][appName][elementName]['visits'] = 
                                 updateViewsVisits(currDate, appName, elementName, 'visits', type, viewsVisits);                                                                
                     } else {
                         console.log(type);
                         console.log(elementName);
-                    }
+                    }                   
                 });
-            //}
         });    
     });
     viewsVisits['totalViews'] = totalViewsVisitsCurr[0] + 0.0;
@@ -235,6 +198,7 @@ function generateBarChartData(data, elm) {
     totalViewsVisitsCurr[1] = 0;
     return viewsVisits;
 }
+
 /*
     Transform raw houlry data into a form easily handled by d3.js
 */
@@ -315,7 +279,7 @@ function updateViewsVisits(date, appName, elementName, countType, type, viewsVis
     var update = viewsVisits[date][appName][elementName][countType] === undefined ? 
             Number(type.counts[typeIndex]) : 
             viewsVisits[date][appName][elementName][countType] + Number(type.counts[typeIndex]);
-    totalViewsVisitsCurr[typeIndex] += Number(type.counts[typeIndex]);             
+    totalViewsVisitsCurr[typeIndex] += Number(type.counts[typeIndex]);  
     return update;
 }
 /*
@@ -380,6 +344,27 @@ function parseElementName(type, elm) {
     }
 }
 
+function generateDownloadData(tableData, browserData, osData, deviceData, avgHourlyData) {
+    var fields = ['application', 'total_views', 'total_visits', 'views_windows_7', 
+        'views_windows_10', 'views_os_x', 'views_other_os', 'visits_windows_7',
+        'visits_windows_10', 'visits_os_x', 'visits_other_os', 'views_chrome',
+        'views_ie', 'views_safari', 'views_other_browser', 'visits_chrome',
+        'visits_ie', 'visits_safari', 'visits_other_browser', 'views_desktop',
+        'views_tablet', 'views_mobile', 'views_media_pl', 'visits_desktop', 
+        'visits_tablet', 'visits_mobile', 'visits_media_pl'];  
+    var data = [];
+    apps.forEach(function(application) {
+        var entry = [];
+        entry.push(application);
+        entry.push(tableData[application].views);
+        entry.push(tableData[application].visits);
+
+    })
+
+
+
+}
+
 //var pieData = generatePieData(pieDataDaily.report.data);  
 var pieData = generatePieData(pieDataAllApps.report.data);  
 //var tableData = generateTableData(pieDataDaily.report.data, new Date(2017, 6, 22), new Date(2017, 7, 22));
@@ -391,3 +376,4 @@ var osData = generateBarChartData(osDataAllApps.report.data, 'os');
 //var deviceData = generateBarChartData(deviceDataDaily.report.data, 'device'); 
 var deviceData = generateBarChartData(deviceDataAllApps.report.data, 'device'); 
 var avgHourlyData = generateAvgHourlyData(hourlyDataTotal, new Date(2017, 6, 22), new Date(2017, 7, 22));
+
