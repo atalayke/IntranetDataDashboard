@@ -1,4 +1,4 @@
-var tableBackgrounds = [/*'#fff1d1',*/ '#dfebef', '#fae3cc', '#e1e8cc', '#f2d0d8', '#ccdfe3', '#d2dde8'];
+var tableBackgrounds = ['#fff1d1', '#dfebef', '#fae3cc', '#e1e8cc', '#f2d0d8', '#ccdfe3', '#d2dde8'];
 /*
 	Initially generates Total and Apps tables
 */
@@ -77,7 +77,9 @@ function genTables(data, appCols, totCols, metric, totals) {
 			Append head element to apps table
 		*/
 		var appHead = appTable.append('thead')
-			.attr('class', 'thead-default');			
+			.attr('class', 'thead-default')
+			.attr('id', 'appHead')
+		;			
 
 		/*
 			Append body to apps table

@@ -32,22 +32,63 @@
     <script type='text/javascript' src='scripts/updateBarCharts.js'></script>
     <script type="text/javascript" src='scripts/avgHourlyChart.js'></script>
     <script type='text/javascript'>
-        populateAppsArrays(pieDataAllApps.report.data);
-        appsCurrDisp = apps.slice();
-        appsNotCurrDisp = [];
-        genVisData();
+    populateAppsArrays(pieDataAllApps.report.data);
+    genVisData();
     </script>
 </head>
 
 <body>
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
         <ul class="nav navbar-nav">
-            <li class="dropdown">
+            <li class='dropdown'>
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">View Type<span class="caret"></span></a>
-                <ul class="dropdown-menu" id='apps_list'>
+                <ul class="dropdown-menu">
                     <li><a href="app_selector.html">App Selector</a></li>
                     <li role="separator" class="divider"></li>
                     <li><a href="dashboard_index.html">All Apps</a></li>
+                </ul>
+            </li>
+            <li class='dropdown' id='add_app_drop'>
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                        Select App(s) to Add
+                        <span class="caret"></span>
+                    </a>
+                <a href='#' id='add_apps_button'>Add App(s)</a>
+                <ul class="dropdown-menu" id='add_apps_list'>
+                    <script type='text/javascript'>
+                    populateAddAppDrop();
+                    function populateAddAppDrop() {
+                        document.getElementById('add_apps_list').innerHTML = '';
+                        appsNotCurrDisp.forEach(function(app) {
+                            var menuItem = '<li><a href=\'#\' id=\'' + app + '\'data-value=\'' + app + '\'><input type=\'checkbox\'tabIndex=\'-1\' name=\'' + app + '\'/>&nbsp;' + app + '</a></li>';
+                            document.getElementById('add_apps_list').innerHTML += menuItem;
+                        });
+                    }
+                    </script>
+                </ul>
+                <!--
+                <ul class='dropdown-menu' id='add_button'>
+                    <li><a href='#' id='add_apps_button'>Add App(s)</a></li>
+                </ul>
+            -->
+            </li>
+            <li class="dropdown" id='rem_app_drop'>
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                    Select App(s) to Remove
+                    <span class="caret"></span></a>
+                <a href='#' id='rem_apps_button'>Remove App(s)</a>
+                <ul class="dropdown-menu" id='rem_apps_list'>
+                    <script type='text/javascript'>
+                    populateRemAppDrop();
+
+                    function populateRemAppDrop() {
+                        document.getElementById('rem_apps_list').innerHTML = '';
+                        appsCurrDisp.forEach(function(app) {
+                            var menuItem = '<li><a href=\'#\' id=\'' + app + '\'data-value=\'' + app + '\'><input type=\'checkbox\'tabIndex=\'-1\' name=\'' + app + '\'/>&nbsp;' + app + '</a></li>';
+                            document.getElementById('rem_apps_list').innerHTML += menuItem;
+                        });
+                    }
+                    </script>
                 </ul>
             </li>
             <li class="dropdown">
@@ -57,7 +98,6 @@
                     <li><a href='#' id='visitorsButton'>Unique Visitors</a></li>
                 </ul>
             </li>
-            <li class="active"><a href="#" id='downloadCSVButton'>Download CSV<span class="sr-only">(current)</span></a></li>
         </ul>
     </div>
     <div id="resultSpace">
@@ -100,6 +140,7 @@
     function genVisuals(metric) {
         visGen = true;
         totals = {};
+        console.log(pieData);
         totals['visits'] = pieData['totalVisits'];
         totals['views'] = pieData['totalViews'];
         genPieChart(pieData, metric);
@@ -107,13 +148,13 @@
         genBarChart(browserData, browserType, metric);
         genBarChart(osData, osType, metric);
         genBarChart(deviceData, deviceType, metric);
-        genHourlyChart(avgHourlyData, metric);
+        //genHourlyChart(avgHourlyData, metric);
     }
     /*
         updateVisuals is called after "visitors" or "page views" is pressed while
         visualizations are already present (i.e. to update existing visuals)
     */
-    function updateVisuals(metric) {
+    function updateVisuals(metric, add) {
         updatePieChart(pieDataAllApps.report.data, metric);
         totals = {};
         totals['visits'] = pieData['totalVisits'];
@@ -122,8 +163,49 @@
         updateBarChart(barGroup, currColor, browserType, browserData, metric);
         updateBarChart(barGroup, currColor, osType, osData, metric);
         updateBarChart(barGroup, currColor, deviceType, deviceData, metric);
-        updateHourlyBarChart(barGroup, currColor, metric);
+        //updateHourlyBarChart(barGroup, currColor, metric);
     }
+
+    $('#add_apps_button').on('click', function(event) {
+        $('#add_app_drop input:checkbox:checked').each(function(input) {
+            var app = $('#add_app_drop input:checkbox:checked')[input].name;
+            console.log(app);
+            var ind = appsNotCurrDisp.indexOf(app);
+            if (ind > -1) {
+                appsNotCurrDisp.splice(ind, 1);
+                appsCurrDisp.push(app);
+            }
+        });
+        genVisData();
+        populateRemAppDrop();
+        populateAddAppDrop();
+        if (visGen) {
+            updateVisuals(currMetric);
+        }
+        console.log(appsCurrDisp);
+        console.log(appsNotCurrDisp);
+    });
+
+    $('#rem_apps_button').on('click', function(event) {
+        console.log('removing apps');
+        $('#rem_app_drop input:checkbox:checked').each(function(input) {        
+            var app = $('#rem_app_drop input:checkbox:checked')[input].name;
+            console.log(app);
+            var ind = appsCurrDisp.indexOf(app);
+            if (ind > -1) {
+                appsCurrDisp.splice(ind, 1);
+                appsNotCurrDisp.push(app);
+            }
+        });
+        genVisData();
+        populateRemAppDrop();
+        populateAddAppDrop();
+        console.log(appsCurrDisp);
+        console.log(appsNotCurrDisp);
+        if (visGen) {
+            updateVisuals(currMetric);
+        }
+    });
 
     $('#visitorsButton').click(function() {
         console.log('visitors button pressed');

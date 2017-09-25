@@ -107,7 +107,7 @@ function updatePieChart(data, metric) {
       .transition()
       .duration(750)
       .attr('points', function(d) {
-        console.log(d);
+//        console.log(d);
         if(d.data.value[metric] > 0 && (d.endAngle - d.startAngle) > 0.2) { 
           return [arc.centroid(d), arcFinal.centroid(d)];               
         } else {

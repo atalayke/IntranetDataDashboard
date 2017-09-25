@@ -1,4 +1,4 @@
-var colorscheme = [/*'#ffb819',*/ '#5f9baf', '#e57200', '#719500', '#c0143c', '#005f71', '#616265'];
+var colorscheme = ['#ffb819', '#5f9baf', '#e57200', '#719500', '#c0143c', '#005f71', '#616265'];
 var pieData;
 var width = 400,
     height = 400,
@@ -236,7 +236,7 @@ function selectPieData(dataset, startDate, endDate) {
     var totalViews = 0;
     var totalVisits = 0;
     var viewsVisits = {}
-    apps.forEach(function(entry) {
+    appsCurrDisp.forEach(function(entry) {
         viewsVisits[entry] = {};
         viewsVisits[entry]['views'] = {};
         viewsVisits[entry]['visits'] = {};
@@ -247,8 +247,8 @@ function selectPieData(dataset, startDate, endDate) {
         var date = new Date(day.year, day.month - 1, day.day);
         if(date >= startDate && date <= endDate) {
             day.breakdown.forEach(function(app) {            
-                name = parseAppName(app.name);
-                if(name !== '') {
+                name = parseAppName(app.name);                
+                if(name !== '' && (appsCurrDisp.indexOf(name) !== -1)) {
                     viewsVisits[name]['views'] += Number(app.counts[0]);
                     viewsVisits[name]['visits'] += Number(app.counts[1]);
                     totalViews += Number(app.counts[0]);
