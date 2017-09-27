@@ -132,6 +132,6 @@ function updateBarChart(grp, colorChosen, type, data, metric) {
         .attr("y", 15)
         .attr("class","title")
         .attr("text-anchor", "middle")
-        .text(currGroup + plotTitle + type.type)
+        .text(currGroup + plotTitle + parseType(type.type))
     ;
 }

@@ -1,12 +1,10 @@
-var colorscheme = ['#ffb819', '#5f9baf', '#e57200', '#719500', '#c0143c', '#005f71', '#616265'];
 var pieData;
 var width = 400,
     height = 400,
     outerRadius = Math.min(width, height) / 4,
     innerRadius = outerRadius * .999,
     innerRadiusFinal = outerRadius * .5,
-    innerRadiusFinal3 = outerRadius* .45,
-    color = d3.scaleOrdinal(colorscheme);
+    innerRadiusFinal3 = outerRadius* .45;
 var formatAsPercentage = d3.format("%"),
     formatAsPercentage1Dec = d3.format(".1%"),
     formatAsInteger = d3.format(",")
@@ -96,7 +94,7 @@ function genPieChart(data, metric) {
         Append percentages to slices
     */
     arcs.append("svg:path")
-        .attr("fill", function(d, i) { return color(i); } ) 
+        .attr("fill", function(d, i) { return pieColor(i); } ) 
         .attr("d", arc)
         .append("svg:title")
         .text(function(d) { return getPercTitle(d, metric, data[totalSelector]); })
@@ -221,10 +219,10 @@ function genPieChart(data, metric) {
 */
 function updateGroup(d, i) {           
     if(!(d.data.key === barGroup)) {
-        updateBarChart(d.data.key, color(i), browserType, browserData, currMetric);
-        updateBarChart(d.data.key, color(i), osType, osData, currMetric);       
-        updateBarChart(d.data.key, color(i), deviceType, deviceData, currMetric);
-        updateHourlyBarChart(d.data.key, color(i), currMetric);        
+        updateBarChart(d.data.key, pieColor(i), browserType, browserData, currMetric);
+        updateBarChart(d.data.key, pieColor(i), osType, osData, currMetric);       
+        updateBarChart(d.data.key, pieColor(i), deviceType, deviceData, currMetric);
+        updateHourlyBarChart(d.data.key, pieColor(i), currMetric);        
     } else {
         console.log('did not update');
     }

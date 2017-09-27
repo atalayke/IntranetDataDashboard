@@ -1,11 +1,10 @@
-var tableBackgrounds = ['#fff1d1', '#dfebef', '#fae3cc', '#e1e8cc', '#f2d0d8', '#ccdfe3', '#d2dde8'];
 /*
 	Initially generates Total and Apps tables
 */
 function genTables(data, appCols, totCols, metric, totals) {
 	/*
 		Generate totals table
-	*/
+	*/	
 	function genTotalsTable(cols, metric, totals) {		
 		/*
 			Select appropriate metric
@@ -106,14 +105,14 @@ function genTables(data, appCols, totCols, metric, totals) {
 				.append('tr')
 				.on('click', function(d, i) { 
 					if(!(d.key === barGroup)) {
-						updateBarChart(d.key, color(i), browserType, browserData, currMetric);
-				        updateBarChart(d.key, color(i), osType, osData, currMetric);       
-				        updateBarChart(d.key, color(i), deviceType, deviceData, currMetric);
-				        updateHourlyBarChart(d.key, color(i), currMetric);        
+						updateBarChart(d.key, pieColor(i), browserType, browserData, currMetric);
+				        updateBarChart(d.key, pieColor(i), osType, osData, currMetric);       
+				        updateBarChart(d.key, pieColor(i), deviceType, deviceData, currMetric);
+				        updateHourlyBarChart(d.key, pieColor(i), currMetric);        
 					}
 				 })
 				.on('mouseover', function(d, i) {
-					d3.select(this).style('background-color', tableBackgrounds[i]);
+					d3.select(this).style('background-color', tableColor(i));
 				})
 				.on('mouseout', function(d, i) {
 					d3.select(this).style('background-color', 'white');

@@ -1,33 +1,16 @@
-var apps = [];
-var appsNotCurrDisp = [];
-var appsCurrDisp = [];
-var allowableBrowsers = ['Google Chrome', 'Internet Explorer', 'Safari', 'Other'];
-var allowableOS = ['Windows 7', 'Windows 10', 'OS X', 'Other'];
-var allowableOSRaw = ['windows 7', 'windows 10', 'os x 10.11', 'os x 10.10', 'Other'];
-var allowableDev = ['Desktop', 'Tablet', 'Mobile Phone', 'Media Player'];
-
-var csvBrowsers = {};
-var csvOS = {};
-var csvDev = {};
+var pieData;
+var tableData;
+var browserData;
+var osData;
+var deviceData;
+var avgHourlyData;
 /*
     Transform raw pie chart data into a form easily handled by d3.js
 */
-function populateAppsArrays(data) {
-    data.forEach(function(datum) {
-        datum.breakdown.forEach(function(entry) {
-            var app = parseAppName(entry.name);
-            if ((apps.indexOf(app) === -1) && (app !== '')) {
-                apps.push(app);
-                appsNotCurrDisp.push(app);
-            }
-        });
-    });
-}
-
 function generatePieData(data) {
     var totalViews = 0;
     var totalVisits = 0;
-    
+
     console.log(apps);
     var viewsVisits = {}
     appsCurrDisp.forEach(function(entry) {
@@ -52,44 +35,6 @@ function generatePieData(data) {
     viewsVisits['totalViews'] = totalViews;
     viewsVisits['totalVisits'] = totalVisits;
     return viewsVisits;
-}
-
-function parseAppName(name) {
-    if (name) {
-        var root = name.split('.')[0].replace('https://', '');
-        switch (root) {
-            case 'csosmember':
-                return 'CSOS Member';
-            case 'internal':
-                return 'ITG';
-            case 'healthyeating':
-                return 'Healthy Eating';
-            case 'iaspnhlbiadmin':
-                return 'IASP Admin';
-            case 'webapp':
-                return 'Web App';
-            case 'brtpugadmin':
-                return 'BRTPUG Admin';
-            case 'oedadmin':
-                return 'OED Admin';
-            case 'consultantaccess':
-                return 'Consultant Access';
-            case 'trac':
-            case 'brtpug':
-            case 'csos':
-            case 'iasp':
-            case 'ids':
-            case 'grasp':
-            case 'mtagym':
-            case 'oed':
-            case 'teac':
-                return root.toUpperCase();
-            default:
-                return '';
-        }
-    } else {
-        return '';
-    }
 }
 /*
     Transform raw table data into a form easily handled by d3.js
@@ -125,18 +70,6 @@ function generateTableData(data, startDate, endDate) {
         }
     });
     return viewsVisits;
-}
-/*
-    Return appropriate whitelist given type
-*/
-function getWhiteList(type) {
-    if (type === 'browser') {
-        return allowableBrowsers;
-    } else if (type === 'device') {
-        return allowableDev;
-    } else {
-        return allowableOS;
-    }
 }
 /*
     Transform raw bar chart data into a form easily handled by d3.js
@@ -208,7 +141,6 @@ function generateBarChartData(data, elm) {
     totalViewsVisitsCurr[1] = 0;
     return viewsVisits;
 }
-
 /*
     Transform raw houlry data into a form easily handled by d3.js
 */
@@ -294,95 +226,69 @@ function updateViewsVisits(date, appName, elementName, countType, type, viewsVis
     totalViewsVisitsCurr[typeIndex] += Number(type.counts[typeIndex]);
     return update;
 }
-/*
-    Return a date object given a data element
-*/
-function parseDate(date) {
-    var year = date.year,
-        month = date.month - 1,
-        day = date.day;
-    return new Date(year, month, day);
-}
-/*
-    Given a type and an element, return the appropriate
-    name
-*/
-function parseElementName(type, elm) {
-    if (elm === 'browser') {
-        //console.log(type);
-        var rawName = type.name.split(' ');
-        var browserName;
-        //Determine browser type
-        if (rawName[0] === 'safari') {
-            browserName = 'Safari';
-        } else if (rawName[1] === 'internet') {
-            browserName = 'Internet Explorer';
-        } else if (rawName[0] === 'google') {
-            //browserName = rawName[0] + " " + rawName[1];
-            browserName = 'Google Chrome';
-        }
-        //Determine if this is an "allowable" browser
-        if (allowableBrowsers.indexOf(browserName) === -1) {
-            return 'Other';
-        } else {
-            return browserName;
-        }
-    } else if (elm === 'os') {
-        var osName = type.name;
-        if (allowableOSRaw.indexOf(osName) === -1) {
-            return 'Other';
-        } else {
-            var rawName = osName.split(' ');
-            if (rawName[0] === 'windows') {
-                if (rawName[1] === '10') {
-                    return 'Windows 10';
-                } else {
-                    return 'Windows 7';
-                }
-            } else if (rawName[0] === 'os') {
-                return 'OS X';
-            } else {
-                return 'Other';
-            }
-        }
-    } else {
-        if (type.name === 'Gaming Console') {
-            return 'Media Player';
-        } else if (type.name === 'Other') {
-            return 'Desktop';
-        } else {
-            return type.name;
-        }
-    }
-}
 
-function generateDownloadData(tableData, browserData, osData, deviceData, avgHourlyData) {
-    var fields = ['application', 'total_views', 'total_visits', 'views_windows_7',
-        'views_windows_10', 'views_os_x', 'views_other_os', 'visits_windows_7',
-        'visits_windows_10', 'visits_os_x', 'visits_other_os', 'views_chrome',
-        'views_ie', 'views_safari', 'views_other_browser', 'visits_chrome',
-        'visits_ie', 'visits_safari', 'visits_other_browser', 'views_desktop',
-        'views_tablet', 'views_mobile', 'views_media_pl', 'visits_desktop',
-        'visits_tablet', 'visits_mobile', 'visits_media_pl'
+function genCSVData() {
+    var flds = ['application', 'total_views', 'total_visits',
+        'views_windows_7', 'views_windows_10', 'views_os_x', 'views_other_os',
+        'visits_windows_7', 'visits_windows_10', 'visits_os_x', 'visits_other_os',
+        'views_chrome', 'views_ie', 'views_safari', 'views_other_browser',
+        'visits_chrome', 'visits_ie', 'visits_safari', 'visits_other_browser',
+        'views_desktop', 'views_tablet', 'views_mobile', 'views_media_pl',
+        'visits_desktop', 'visits_tablet', 'visits_mobile', 'visits_media_pl'
     ];
-    var data = [];
-    apps.forEach(function(application) {
+    var dta = [];
+    appsCurrDisp.forEach(function(application) {
+        console.log(application);
         var entry = [];
-        entry.push(application);
-        entry.push(tableData[application].views);
-        entry.push(tableData[application].visits);
-
-    })
-
-
-
+        var browser = selectBarData(d3.entries(browserData), minDate, maxDate, application);
+        var os = selectBarData(d3.entries(osData), minDate, maxDate, application);
+        var dev = selectBarData(d3.entries(deviceData), minDate, maxDate, application);
+        console.log(browser);
+        console.log(os);
+        console.log(dev);
+        entry.push(application); //application name
+        entry.push(tableData[application].views); //total_views
+        entry.push(tableData[application].visits); //total_visits
+        entry.push(os['data']['Windows 7']['views']); //views_windows7
+        entry.push(os['data']['Windows 10']['views']); //views_windows10        
+        entry.push(os['data']['OS X']['views']); //views_os_x
+        entry.push(os['data']['Other']['views']); //views_other_os
+        entry.push(os['data']['Windows 7']['visits']); //visits_windows_7        
+        entry.push(os['data']['Windows 10']['visits']); //visits_windows_10
+        entry.push(os['data']['OS X']['visits']); //visits_os_x
+        entry.push(os['data']['Other']['visits']); //visits_other_os
+        entry.push(browser['data']['Google Chrome']['views']); //views_chrome
+        entry.push(browser['data']['Internet Explorer']['views']); //views_ie
+        entry.push(browser['data']['Safari']['views']); //visits_safari
+        entry.push(browser['data']['Other']['views']); //visits_other_browser
+        entry.push(browser['data']['Google Chrome']['visits']); //visits_chrome
+        entry.push(browser['data']['Internet Explorer']['visits']); //visits_ie
+        entry.push(browser['data']['Safari']['visits']); //visits_safari
+        entry.push(browser['data']['Other']['visits']); //visits_other_browser
+        entry.push(dev['data']['Desktop']['views']); //views_desktop
+        entry.push(dev['data']['Tablet']['views']); //views_tablet
+        entry.push(dev['data']['Mobile Phone']['views']); //views_mobile
+        entry.push(dev['data']['Media Player']['views']); //views_media_pl
+        entry.push(dev['data']['Desktop']['visits']); //visits_desktop
+        entry.push(dev['data']['Tablet']['visits']); //visits_tablet
+        entry.push(dev['data']['Mobile Phone']['visits']); //visits_mobile
+        entry.push(dev['data']['Media Player']['visits']); //visits_media_pl
+        entry.push('&&');
+        dta.push(entry);
+    });
+    return {
+        fields: flds,
+        data: dta,
+        config: {
+            quotes: false,
+            quoteChar: '"',
+            delimiter: ',',
+            header: true,
+            newline: '&&'
+        }
+    };
 }
-var pieData;
-var tableData;
-var browserData;
-var osData;
-var deviceData;
-var avgHourlyData;
+
 function genVisData() {
     //var pieData = generatePieData(pieDataDaily.report.data);  
     pieData = generatePieData(pieDataAllApps.report.data);

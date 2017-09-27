@@ -177,6 +177,6 @@ function genBarChart(data, type, metric) {
         .attr("y", 15)
         .attr("class","title")
         .attr("text-anchor", "middle")
-        .text(plotTitle + " By " + type.type)
+        .text(plotTitle + " By " + parseType(type.type))
     ;
 }

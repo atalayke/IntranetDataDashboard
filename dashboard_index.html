@@ -31,10 +31,12 @@
     <script type='text/javascript' src='scripts/updateTable.js'></script>
     <script type='text/javascript' src='scripts/updateBarCharts.js'></script>
     <script type="text/javascript" src='scripts/avgHourlyChart.js'></script>
+    <script type="text/javascript" src='scripts/d3Header.js'></script>
     <script type='text/javascript'>
         populateAppsArrays(pieDataAllApps.report.data);
         appsCurrDisp = apps.slice();
         appsNotCurrDisp = [];
+        var visGen = false;
         genVisData();
     </script>
 </head>
@@ -86,13 +88,15 @@
             maxDate: new Date(2017, 07, 22)
         }).on('apply.daterangepicker',
             function(ev, picker) {
-                updateVisualsTimeChange(picker.startDate._d, picker.endDate._d);
+                if(visGen)
+                {
+                    updateVisualsTimeChange(picker.startDate._d, picker.endDate._d);
+                }        
             });
     });
     </script>
     </div>
-    <script type='text/javascript'>
-    var visGen = false;
+    <script type='text/javascript'>    
     /*
         genVisuals is called after the first button press of either "visitors"
         or "page views"  (i.e. generates first visuals)
@@ -147,7 +151,6 @@
 
     $('#downloadCSVButton').click(function() {
         console.log('generating csv of current data');
-        var csv = Papa.unparse([tableData]);
         console.log(pieData);
         console.log(browserData);
         console.log(osData);
@@ -156,15 +159,17 @@
         console.log(tableData);
         console.log(csv);
         console.log(apps);
-        console.log(viewsVisits);
-        /*
-        var filename = 'intranetMetrics.csv';
-        var data = encodeURI(csv);
+        var csv = Papa.unparse(genCSVData());
+        console.log(csv);
+        //var start = minDate.toString().replace(' ', '_');
+        //var end = maxDate.toString().replace(' ', '_');
+        var filename = 'IntranetMetrics_' + getDateString(minDate) + '__' + getDateString(maxDate) + '.csv';
+        var data = 'data:text/csv;charset=utf-8,' + csv;
+        var dataURI = encodeURI(data);
         var link = document.createElement('a');
-        link.setAttribute('href', data);
+        link.setAttribute('href', dataURI);
         link.setAttribute('download', filename);
-        link.click();
-        */
+        link.click();        
     });
     </script>
 </body>

@@ -6,8 +6,8 @@ var browserTotalViews, browserTotalVisits,
 var formatAsPercentage = d3.format("%"),
     formatAsPercentage1Dec = d3.format(".1%"),
     formatAsInteger = d3.format(",");
-var minDate = new Date(2017, 7, 22),
-    maxDate = new Date(2017, 8, 22);
+var minDate = new Date(2017, 6, 22),
+    maxDate = new Date(2017, 7, 22);
 var initColor = currColor;
 var browserType = setTypeParams('browser');
 var osType = setTypeParams('os');

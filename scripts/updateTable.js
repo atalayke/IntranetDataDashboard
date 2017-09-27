@@ -1,10 +1,10 @@
 /*
 	Update existing totals/apps tables
 */
+var currTableData;
 function updateTables(barGroup, data, appCols, totCols, metric, totals) {	
 	var tableData = generateTableData(data, minDate, maxDate); 
-	console.log(tableData);
-	tableData = d3.entries(tableData);	
+	currTableData = d3.entries(tableData);	
 	var title = metric === 'views' ? ' Page Views' : ' Unq. Vis.';
 	/*
 		Update values in the Applications Table
@@ -36,20 +36,20 @@ function updateTables(barGroup, data, appCols, totCols, metric, totals) {
 	var appBody = appTable.append('tbody').attr('id', 'appBody');
 	var currCol;
 	var rows = appBody.selectAll('tr')
-				.data(tableData)
+				.data(currTableData)
 				.enter()
 				.append('tr')
 				.on('click', function(d, i) { 
 					console.log(d);
 					if(!(d.key === barGroup)) {
-						updateBarChart(d.key, color(i), browserType, browserData, currMetric);
-				        updateBarChart(d.key, color(i), osType, osData, currMetric);       
-				        updateBarChart(d.key, color(i), deviceType, deviceData, currMetric);
-				        updateHourlyBarChart(d.key, color(i), currMetric);        
+						updateBarChart(d.key, pieColor(i), browserType, browserData, currMetric);
+				        updateBarChart(d.key, pieColor(i), osType, osData, currMetric);       
+				        updateBarChart(d.key, pieColor(i), deviceType, deviceData, currMetric);
+				        updateHourlyBarChart(d.key, pieColor(i), currMetric);        
 					}
 				 })
 				.on('mouseover', function(d, i) {
-					d3.select(this).style('background-color', tableBackgrounds[i]);
+					d3.select(this).style('background-color', tableColor(i));
 				})
 				.on('mouseout', function(d, i) {
 					d3.select(this).style('background-color', 'white');

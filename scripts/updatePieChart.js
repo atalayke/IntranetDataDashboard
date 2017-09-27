@@ -11,10 +11,14 @@ function updatePieChart(data, metric) {
    	/*
       Generate new pie element given updated data
     */
-   	var pie = d3.pie()   		
+   	var pie = d3.pie()   	
    		.sort(null)
-   		.value(function(d) { if( !(d.key === 'totalVisits') && !(d.key === 'totalViews')) {
-            return d.value[metric];}})(currPieData)
+   		.value( function(d) { 
+          if( !(d.key === 'totalVisits') && !(d.key === 'totalViews')) {            
+            return d.value[metric];
+          } else {
+            console.log(d);
+          }})(currPieData);        
    	;
     /*
       Select existing piechart element, update values displayed on slices
@@ -101,19 +105,56 @@ function updatePieChart(data, metric) {
     /*
       Update polylines
     */
+    /*
+    console.log(currPieData);
     d3.select('.lines')
       .selectAll('polyline')
       .data(pie)  
       .transition()
       .duration(750)
       .attr('points', function(d) {
-//        console.log(d);
+        console.log(d);
         if(d.data.value[metric] > 0 && (d.endAngle - d.startAngle) > 0.2) { 
           return [arc.centroid(d), arcFinal.centroid(d)];               
         } else {
           return [arc.centroid(d), arc.centroid(d)];
         }       
     })
+    */
+    console.log(currPieData);
+    var lines = d3.select('.lines')
+      .selectAll('polyline')
+      .data(pie)  
+      ;
+
+    lines.transition()
+      .duration(750)
+      .attr('points', function(d) {
+        if(d.data.value[metric] > 0 && (d.endAngle - d.startAngle) > 0.2) { 
+          return [arc.centroid(d), arcFinal.centroid(d)];               
+        } else {
+          return [arc.centroid(d), arc.centroid(d)];
+        }       
+    });
+
+      //.transition()
+      //.duration(750)
+    lines.enter()     
+      .append('polyline')
+      .attr('points', function(d) {
+        if(d.data.key === 'totalViews' || d.data.key === 'totalVisits') {
+          console.log(d.data.key);
+          return [0,0];
+        }
+        if(d.data.value[metric] > 0 && (d.endAngle - d.startAngle) > 0.2) { 
+          return [arc.centroid(d), arcFinal.centroid(d)];               
+        } else {
+          return [arc.centroid(d), arc.centroid(d)];
+        }       
+      })
+      .attr('transform', 'scale(1.32)');
+
+    
     /*
       Update pie char title
     */
