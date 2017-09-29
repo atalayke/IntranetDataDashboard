@@ -39,6 +39,7 @@
 </head>
 
 <body>
+    <img src='styles/nhlbi_logo.png' id='nhlbi_logo'>
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
         <ul class="nav navbar-nav">
             <li class='dropdown'>
@@ -54,11 +55,10 @@
                         Select App(s) to Add
                         <span class="caret"></span>
                     </a>
-                <a href='#' id='add_apps_button'>Add App(s)</a>
+                <!--<a href='#' id='add_apps_button'>Add App(s)</a>-->
                 <ul class="dropdown-menu" id='add_apps_list'>
                     <script type='text/javascript'>
                     populateAddAppDrop();
-
                     function populateAddAppDrop() {
                         document.getElementById('add_apps_list').innerHTML = '';
                         appsNotCurrDisp.forEach(function(app) {
@@ -69,11 +69,14 @@
                     </script>
                 </ul>
             </li>
+            <li>
+                <a href='#' id='add_apps_button'>Add App(s)</a>
+            </li>
             <li class="dropdown" id='rem_app_drop'>
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                     Select App(s) to Remove
                     <span class="caret"></span></a>
-                <a href='#' id='rem_apps_button'>Remove App(s)</a>
+                <!-- <a href='#' id='rem_apps_button'>Remove App(s)</a> -->
                 <ul class="dropdown-menu" id='rem_apps_list'>
                     <script type='text/javascript'>
                     populateRemAppDrop();
@@ -88,6 +91,9 @@
                     </script>
                 </ul>
             </li>
+            <li>
+                <a href='#' id='rem_apps_button'>Remove App(s)</a>
+            </li>
             <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Metrics<span class="caret"></span></a>
                 <ul class="dropdown-menu" id='apps_list'>
@@ -98,6 +104,23 @@
             <li class="active"><a href="#" id='downloadCSVButton'>Download CSV<span class="sr-only">(current)</span></a></li>
         </ul>
     </div>
+    <div id='dateRange'>
+        <input type="text" name="daterange" value="07/22/2017 - 8/22/2017" />
+        <script type="text/javascript">
+        $(function() {
+            $('input[name="daterange"]').daterangepicker({
+                minDate: new Date(2017, 06, 22),
+                maxDate: new Date(2017, 07, 22)
+            }).on('apply.daterangepicker',
+                function(ev, picker) {
+                    if (visGen) {
+                        updateVisualsTimeChange(picker.startDate._d, picker.endDate._d);
+                    }
+
+                });
+        });
+        </script>
+    </div>
     <div id="resultSpace">
         <script type='text/javascript'>
         var currMetric;
@@ -105,39 +128,22 @@
         var totalHeaders = ['Total Views', 'Total Visits'];
         var visGen = false;
         </script>
-    </div>
-    <div id="pieChart">
-        <script type="text/javascript" src="scripts/genPieChart.js"></script>
-        <script type='text/javascript' src='scripts/updatePieChart.js'></script>
-    </div>
-    <div id="browserChart"></div>
-    <div id='osChart'></div>
-    <div id='hourlyChart'></div>
-    <div id='deviceChart'></div>
-    <div id='dataTableTotal'></div>
-    <div id='dataTable'></div>
-    <div id='dateRange'></div>
-    <input type="text" name="daterange" value="07/22/2017 - 8/22/2017" />
-    <script type="text/javascript">
-    $(function() {
-        $('input[name="daterange"]').daterangepicker({
-            minDate: new Date(2017, 06, 22),
-            maxDate: new Date(2017, 07, 22)
-        }).on('apply.daterangepicker',
-            function(ev, picker) {
-                if (visGen) {
-                    updateVisualsTimeChange(picker.startDate._d, picker.endDate._d);
-                }
-
-            });
-    });
-    </script>
+        <div id="pieChart">
+            <script type="text/javascript" src="scripts/genPieChart.js"></script>
+            <script type='text/javascript' src='scripts/updatePieChart.js'></script>
+        </div>
+        <div id="browserChart"></div>
+        <div id='osChart'></div>
+        <div id='hourlyChart'></div>
+        <div id='deviceChart'></div>
+        <div id='dataTableTotal'></div>
+        <div id='dataTable'></div>
     </div>
     <script type='text/javascript'>
     /*
-        genVisuals is called after the first button press of either "visitors"
-        or "page views"  (i.e. generates first visuals)
-    */
+            genVisuals is called after the first button press of either "visitors"
+            or "page views"  (i.e. generates first visuals)
+        */
     function genVisuals(metric) {
         visGen = true;
         totals = {};
@@ -248,7 +254,7 @@
         var link = document.createElement('a');
         link.setAttribute('href', dataURI);
         link.setAttribute('download', filename);
-        link.click();        
+        link.click();
     });
     </script>
 </body>

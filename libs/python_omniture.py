@@ -6,6 +6,7 @@ suite = analytics.suites['nhlbiapps']
 report = suite.report \
 	.element('page') \
 	.metric('pageviews') \
-	.range('2017-05-01', '2017-05-02', granularity='day') \
+	.range('2017-07-22', '2017-08-22', granularity='hour') \
+	.source('warehouse') \
 	.run()
 print(report)

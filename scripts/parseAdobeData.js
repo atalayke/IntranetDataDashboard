@@ -10,8 +10,6 @@ var avgHourlyData;
 function generatePieData(data) {
     var totalViews = 0;
     var totalVisits = 0;
-
-    console.log(apps);
     var viewsVisits = {}
     appsCurrDisp.forEach(function(entry) {
         viewsVisits[entry] = {};
@@ -20,7 +18,6 @@ function generatePieData(data) {
         viewsVisits[entry]['views'] = 0;
         viewsVisits[entry]['visits'] = 0;
     });
-    console.log(viewsVisits);
     data.forEach(function(day) {
         day.breakdown.forEach(function(app) {
             var name = parseAppName(app.name);

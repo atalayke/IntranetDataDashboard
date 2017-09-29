@@ -4,6 +4,7 @@
 <head>
     <meta charset='utf-8'>
     <title>Web Apps Data Dashboard</title>
+    <!--<img src='styles/nhlbi_logo.png' class='header'>-->
     <link rel="stylesheet" type="text/css" href="styles/dashboard_styles.css">
     <link rel='stylesheet' type='text/css' href='styles/daterangepicker.css'>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
@@ -33,15 +34,16 @@
     <script type="text/javascript" src='scripts/avgHourlyChart.js'></script>
     <script type="text/javascript" src='scripts/d3Header.js'></script>
     <script type='text/javascript'>
-        populateAppsArrays(pieDataAllApps.report.data);
-        appsCurrDisp = apps.slice();
-        appsNotCurrDisp = [];
-        var visGen = false;
-        genVisData();
+    populateAppsArrays(pieDataAllApps.report.data);
+    appsCurrDisp = apps.slice();
+    appsNotCurrDisp = [];
+    var visGen = false;
+    genVisData();
     </script>
 </head>
 
 <body>
+    <img src='styles/nhlbi_logo.png' id='nhlbi_logo'>
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
         <ul class="nav navbar-nav">
             <li class="dropdown">
@@ -62,45 +64,44 @@
             <li class="active"><a href="#" id='downloadCSVButton'>Download CSV<span class="sr-only">(current)</span></a></li>
         </ul>
     </div>
+    <div id='dateRange'>
+        <input type="text" name="daterange" value="07/22/2017 - 8/22/2017" />
+        <script type="text/javascript">
+        $(function() {
+            $('input[name="daterange"]').daterangepicker({
+                minDate: new Date(2017, 06, 22),
+                maxDate: new Date(2017, 07, 22)
+            }).on('apply.daterangepicker',
+                function(ev, picker) {
+                    if (visGen) {
+                        updateVisualsTimeChange(picker.startDate._d, picker.endDate._d);
+                    }
+                });
+        });
+        </script>
+    </div>
     <div id="resultSpace">
         <script type='text/javascript'>
         var currMetric;
         var appHeaders = ['App', 'Raw', '%'];
         var totalHeaders = ['Total Views', 'Total Visits'];
         </script>
+        <div id="pieChart">
+            <script type="text/javascript" src="scripts/genPieChart.js"></script>
+            <script type='text/javascript' src='scripts/updatePieChart.js'></script>
+        </div>
+        <div id="browserChart"></div>
+        <div id='osChart'></div>
+        <div id='hourlyChart'></div>
+        <div id='deviceChart'></div>
+        <div id='dataTableTotal'></div>
+        <div id='dataTable'></div>
     </div>
-    <div id="pieChart">
-        <script type="text/javascript" src="scripts/genPieChart.js"></script>
-        <script type='text/javascript' src='scripts/updatePieChart.js'></script>
-    </div>
-    <div id="browserChart"></div>
-    <div id='osChart'></div>
-    <div id='hourlyChart'></div>
-    <div id='deviceChart'></div>
-    <div id='dataTableTotal'></div>
-    <div id='dataTable'></div>
-    <div id='dateRange'></div>
-    <input type="text" name="daterange" value="07/22/2017 - 8/22/2017" />
-    <script type="text/javascript">
-    $(function() {
-        $('input[name="daterange"]').daterangepicker({
-            minDate: new Date(2017, 06, 22),
-            maxDate: new Date(2017, 07, 22)
-        }).on('apply.daterangepicker',
-            function(ev, picker) {
-                if(visGen)
-                {
-                    updateVisualsTimeChange(picker.startDate._d, picker.endDate._d);
-                }        
-            });
-    });
-    </script>
-    </div>
-    <script type='text/javascript'>    
+    <script type='text/javascript'>
     /*
-        genVisuals is called after the first button press of either "visitors"
-        or "page views"  (i.e. generates first visuals)
-    */
+                    genVisuals is called after the first button press of either "visitors"
+                    or "page views"  (i.e. generates first visuals)
+                */
     function genVisuals(metric) {
         visGen = true;
         totals = {};
@@ -169,7 +170,7 @@
         var link = document.createElement('a');
         link.setAttribute('href', dataURI);
         link.setAttribute('download', filename);
-        link.click();        
+        link.click();
     });
     </script>
 </body>
