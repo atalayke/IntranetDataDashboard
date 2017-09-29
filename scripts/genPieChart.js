@@ -140,6 +140,7 @@ function genPieChart(data, metric) {
     /*
         Append raw frequency to arc
     */
+    /*
     arcs.filter(function(d) { 
             return d.endAngle - d.startAngle > .45; 
         })
@@ -152,9 +153,11 @@ function genPieChart(data, metric) {
             })
         .text(function(d) { return formatAsInteger(d.data.value[metric]); })
     ;
+    */
     /*
         Append percentage to arc
     */
+    /*
     arcs.filter(function(d) { 
             return d.endAngle - d.startAngle > .45; 
         })
@@ -169,6 +172,7 @@ function genPieChart(data, metric) {
             return formatAsPercentage1Dec(d.data.value[metric] / data[totalSelector]) 
             })
     ;
+    */
     /*
         Append title to pie chart
     */   

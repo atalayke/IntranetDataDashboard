@@ -27,11 +27,13 @@ function updatePieChart(data, metric) {
    		.selectAll('path')
    		.data(pie)
    		.attr('d', arc)
-   		.select('title')   		
+   		.select('title')
+      /*   		
    		.text(function(d) { 
      			return d.data.key + ": " + d.data.value[metric] + ' (' + 
    				formatAsPercentage1Dec(d.data.value[metric] / totals) + ') '; 
    			});
+      */
    	;
     /*
       Update slices given udpated data (set transition/delay, etc.)
@@ -53,25 +55,26 @@ function updatePieChart(data, metric) {
       .attr("transform", function(d) { 
             var c = arcFinal.centroid(d);
             return "translate(" + c[0] * 2 + ", " + c[1] * 2 + ")";
-          })
+          })      
       .text(function(d) {
         if(d.data.value[metric] > 0) {
           return d.data.key;
         } else {
           return '';
         }
-      })
+      })      
       .attr('visibility', function(d) {
          if(d.endAngle - d.startAngle > .2) {
             return 'visible';
          } else {
             return 'hidden';
          }
-      })      
+      })            
    	; 
     /*
       Update arc raw frequencies
     */
+    /*
     d3.selectAll('text.label_total')
       .data(pie)
       .attr("transform", function(d) { 
@@ -86,9 +89,11 @@ function updatePieChart(data, metric) {
         }
       })        
     ;
+    */
     /*
       Update arc percentages
     */
+    /*
     d3.selectAll('text.label_perc')
       .data(pie)
       .attr("transform", function(d) { 
@@ -102,6 +107,7 @@ function updatePieChart(data, metric) {
         }
       })
     ;
+    */
     /*
       Update polylines
     */

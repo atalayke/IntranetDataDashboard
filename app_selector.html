@@ -55,10 +55,11 @@
                         Select App(s) to Add
                         <span class="caret"></span>
                     </a>
-                <!--<a href='#' id='add_apps_button'>Add App(s)</a>-->
                 <ul class="dropdown-menu" id='add_apps_list'>
                     <script type='text/javascript'>
+                    
                     populateAddAppDrop();
+
                     function populateAddAppDrop() {
                         document.getElementById('add_apps_list').innerHTML = '';
                         appsNotCurrDisp.forEach(function(app) {
@@ -66,6 +67,7 @@
                             document.getElementById('add_apps_list').innerHTML += menuItem;
                         });
                     }
+
                     </script>
                 </ul>
             </li>
@@ -76,7 +78,6 @@
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
                     Select App(s) to Remove
                     <span class="caret"></span></a>
-                <!-- <a href='#' id='rem_apps_button'>Remove App(s)</a> -->
                 <ul class="dropdown-menu" id='rem_apps_list'>
                     <script type='text/javascript'>
                     populateRemAppDrop();
@@ -214,6 +215,9 @@
         }
     });
 
+    /*
+        Button-press event handlers (metrics switching and csv download)
+    */
     $('#visitorsButton').click(function() {
         console.log('visitors button pressed');
         currMetric = 'visits';
@@ -235,19 +239,7 @@
     });
 
     $('#downloadCSVButton').click(function() {
-        console.log('generating csv of current data');
-        console.log(pieData);
-        console.log(browserData);
-        console.log(osData);
-        console.log(deviceData);
-        console.log(avgHourlyData);
-        console.log(tableData);
-        console.log(csv);
-        console.log(apps);
         var csv = Papa.unparse(genCSVData());
-        console.log(csv);
-        //var start = minDate.toString().replace(' ', '_');
-        //var end = maxDate.toString().replace(' ', '_');
         var filename = 'IntranetMetrics_' + getDateString(minDate) + '__' + getDateString(maxDate) + '.csv';
         var data = 'data:text/csv;charset=utf-8,' + csv;
         var dataURI = encodeURI(data);

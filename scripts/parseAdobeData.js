@@ -139,7 +139,7 @@ function generateBarChartData(data, elm) {
     return viewsVisits;
 }
 /*
-    Transform raw houlry data into a form easily handled by d3.js
+    Transform raw hourly data into a form easily handled by d3.js
 */
 function generateAvgHourlyData(hrlyData, startDate, endDate) {
     var allAppsHr = {};
@@ -223,7 +223,10 @@ function updateViewsVisits(date, appName, elementName, countType, type, viewsVis
     totalViewsVisitsCurr[typeIndex] += Number(type.counts[typeIndex]);
     return update;
 }
-
+/*
+    Format data that is currently displayed such that it is easily writable
+    as a .csv
+*/
 function genCSVData() {
     var flds = ['application', 'total_views', 'total_visits',
         'views_windows_7', 'views_windows_10', 'views_os_x', 'views_other_os',
@@ -287,15 +290,10 @@ function genCSVData() {
 }
 
 function genVisData() {
-    //var pieData = generatePieData(pieDataDaily.report.data);  
     pieData = generatePieData(pieDataAllApps.report.data);
-    //var tableData = generateTableData(pieDataDaily.report.data, new Date(2017, 6, 22), new Date(2017, 7, 22));
     tableData = generateTableData(pieDataAllApps.report.data, new Date(2017, 6, 22), new Date(2017, 7, 22));
-    //var browserData = generateBarChartData(browserDataDaily.report.data, 'browser');
     browserData = generateBarChartData(browserDataAllApps.report.data, 'browser');
-    //var osData = generateBarChartData(osDataDaily.report.data, 'os');
     osData = generateBarChartData(osDataAllApps.report.data, 'os');
-    //var deviceData = generateBarChartData(deviceDataDaily.report.data, 'device'); 
     deviceData = generateBarChartData(deviceDataAllApps.report.data, 'device');
     avgHourlyData = generateAvgHourlyData(hourlyDataTotal, new Date(2017, 6, 22), new Date(2017, 7, 22));
 }

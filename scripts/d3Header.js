@@ -10,6 +10,10 @@ var allowableOS = ['Windows 7', 'Windows 10', 'OS X', 'Other'];
 var allowableOSRaw = ['windows 7', 'windows 10', 'os x 10.11', 'os x 10.10', 'Other'];
 var allowableDev = ['Desktop', 'Tablet', 'Mobile Phone', 'Media Player'];
 
+/*
+    Populate collections indicating which apps are currently displayed
+    and which apps are not (appsCurrDisp, appsNotCurrDisp, resp.)
+*/
 function populateAppsArrays(data) {
     data.forEach(function(datum) {
         datum.breakdown.forEach(function(entry) {
@@ -22,6 +26,10 @@ function populateAppsArrays(data) {
     });
 }
 
+/*
+    return mon/day/year formatted string from
+    date object
+*/
 function getDateString(date) {
     var mon = date.getMonth() + 1;
     var day = date.getDate();
@@ -33,6 +41,9 @@ function getDateString(date) {
     return mon + '_' + day + '_' + yr;
 }
 
+/*
+    Format data type such that it is correctly capitalized
+*/
 function parseType(type) {
 	switch(type) {
 		case 'os':
@@ -45,6 +56,9 @@ function parseType(type) {
 	}
 }
 
+/*
+    Format app names such that they are correctly capitalized
+*/
 function parseAppName(name) {
     if (name) {
         var root = name.split('.')[0].replace('https://', '');

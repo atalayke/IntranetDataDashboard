@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang='en-us'>
-
 <head>
     <meta charset='utf-8'>
     <title>Web Apps Data Dashboard</title>
@@ -99,9 +98,9 @@
     </div>
     <script type='text/javascript'>
     /*
-                    genVisuals is called after the first button press of either "visitors"
-                    or "page views"  (i.e. generates first visuals)
-                */
+        genVisuals is called after the first button press of either "visitors"
+        or "page views"  (i.e. generates first visuals)
+    */
     function genVisuals(metric) {
         visGen = true;
         totals = {};
@@ -130,6 +129,7 @@
         updateHourlyBarChart(barGroup, currColor, metric);
     }
 
+
     $('#visitorsButton').click(function() {
         console.log('visitors button pressed');
         currMetric = 'visits';
@@ -151,19 +151,7 @@
     });
 
     $('#downloadCSVButton').click(function() {
-        console.log('generating csv of current data');
-        console.log(pieData);
-        console.log(browserData);
-        console.log(osData);
-        console.log(deviceData);
-        console.log(avgHourlyData);
-        console.log(tableData);
-        console.log(csv);
-        console.log(apps);
         var csv = Papa.unparse(genCSVData());
-        console.log(csv);
-        //var start = minDate.toString().replace(' ', '_');
-        //var end = maxDate.toString().replace(' ', '_');
         var filename = 'IntranetMetrics_' + getDateString(minDate) + '__' + getDateString(maxDate) + '.csv';
         var data = 'data:text/csv;charset=utf-8,' + csv;
         var dataURI = encodeURI(data);
