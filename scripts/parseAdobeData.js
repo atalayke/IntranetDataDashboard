@@ -4,6 +4,11 @@ var browserData;
 var osData;
 var deviceData;
 var avgHourlyData;
+var hours = [];
+for (var i = 0; i < 24; i++) {
+    hours.push(i.toString());
+}
+
 /*
     Transform raw pie chart data into a form easily handled by d3.js
 */
@@ -138,6 +143,7 @@ function generateBarChartData(data, elm) {
     totalViewsVisitsCurr[1] = 0;
     return viewsVisits;
 }
+
 /*
     Transform raw hourly data into a form easily handled by d3.js
 */
@@ -146,14 +152,7 @@ function generateAvgHourlyData(hrlyData, startDate, endDate) {
     allAppsHr['all'] = {};
     allAppsHr['all']['views'] = {};
     allAppsHr['all']['visits'] = {};
-    var hours = [];
-    var viewSum = 0;
-    var visitSum = 0;
-    var totalHours = 0;
-    var totalDays = 0;
-    for (var i = 0; i < 24; i++) {
-        hours.push(i.toString());
-    }
+    var viewSum = visitSum = totalHours = totalDays = 0;
     appsCurrDisp.forEach(function(app) {
         allAppsHr[app] = {};
         allAppsHr[app]['views'] = {};
@@ -165,10 +164,80 @@ function generateAvgHourlyData(hrlyData, startDate, endDate) {
             allAppsHr['all']['visits'][hr] = 0;
         })
     });
-    /*
-        Get array of dates, iterate over these
-    */
     var dates = Object.keys(hrlyData);
+    console.log(hrlyData);
+    dates.forEach(function(day) {
+        totalDays += 1;
+        totalHours += 24;
+        var currDate = new Date(day);
+        if (currDate >= startDate && currDate <= endDate) {      
+            var hrs = Object.keys(hrlyData[day]);
+            hrs.forEach(function(hour) {
+                var counts = hrlyData[day][hour];
+                var itr = jtr = 0;
+                counts.forEach(function(entry) {
+                    if (jtr === 0) {
+                        var currName = parseAppName(entry);
+                        if (appsCurrDisp.indexOf(currName) !== -1) {
+                            var views = Number(counts[itr + 1]);
+                            var visits = Number(counts[itr + 2]);
+                            viewSum = viewSum + views;
+                            visitSum = visitSum + visits;
+                            allAppsHr[currName]['views'][hour] = allAppsHr[currName]['views'][hour] + views;
+                            allAppsHr[currName]['visits'][hour] = allAppsHr[currName]['visits'][hour] + visits;
+                            allAppsHr['all']['views'][hour] = allAppsHr['all']['views'][hour] + views;
+                            allAppsHr['all']['visits'][hour] = allAppsHr['all']['visits'][hour] + visits;
+                        }
+                    }
+                    if (jtr === 2) {jtr = 0;} else {jtr += 1;}
+                    itr += 1
+                });
+            });
+        } else {}
+    });
+    var numDays = totalHours / 24;
+    appsCurrDisp.forEach(function(app) {
+        hours.forEach(function(hour) {
+            allAppsHr[app]['views'][hour] = allAppsHr[app]['views'][hour] / numDays;
+            allAppsHr[app]['visits'][hour] = allAppsHr[app]['visits'][hour] / numDays;
+        });
+    });
+    hours.forEach(function(hour) {
+        allAppsHr['all']['views'][hour] = allAppsHr['all']['views'][hour] / numDays;
+        allAppsHr['all']['visits'][hour] = allAppsHr['all']['visits'][hour] / numDays;
+    });
+    console.log(allAppsHr);
+    return allAppsHr;
+}
+
+/*
+    Transform raw hourly data into a form easily handled by d3.js
+*/
+/*
+function generateAvgHourlyData(hrlyData, startDate, endDate) {
+    var allAppsHr = {};
+    allAppsHr['all'] = {};
+    allAppsHr['all']['views'] = {};
+    allAppsHr['all']['visits'] = {};
+    var viewSum = 0;
+    var visitSum = 0;
+    var totalHours = 0;
+    var totalDays = 0;
+
+    appsCurrDisp.forEach(function(app) {
+        allAppsHr[app] = {};
+        allAppsHr[app]['views'] = {};
+        allAppsHr[app]['visits'] = {};
+        hours.forEach(function(hr) {
+            allAppsHr[app]['views'][hr] = 0;
+            allAppsHr[app]['visits'][hr] = 0;
+            allAppsHr['all']['views'][hr] = 0;
+            allAppsHr['all']['visits'][hr] = 0;
+        })
+    });
+    console.log(allAppsHr);
+    var dates = Object.keys(hrlyData);
+    console.log(hrlyData);
     dates.forEach(function(day) {
         totalDays += 1;
         var currDate = new Date(day);
@@ -183,8 +252,9 @@ function generateAvgHourlyData(hrlyData, startDate, endDate) {
                 applications.forEach(function(app) {
                     var currApp = hrlyData[day][hour][app];
                     var appName = parseAppName(currApp.name);
-                    //                    currApp.name.split('.')
-                    //                    appName = appName[0].replace('https://', '');
+                    console.log(appName);
+                    //currApp.name.split('.')
+                    //appName = appName[0].replace('https://', '');
                     if (appsCurrDisp.indexOf(appName) !== -1) {
                         var views = Number(currApp.counts[0]);
                         var visits = Number(currApp.counts[1]);
@@ -210,8 +280,10 @@ function generateAvgHourlyData(hrlyData, startDate, endDate) {
         allAppsHr['all']['views'][hour] = allAppsHr['all']['views'][hour] / numDays;
         allAppsHr['all']['visits'][hour] = allAppsHr['all']['visits'][hour] / numDays;
     });
+    //console.log(allAppsHr);
     return allAppsHr;
 }
+*/
 /*
     Updates views or visits counts
 */
@@ -295,5 +367,9 @@ function genVisData() {
     browserData = generateBarChartData(browserDataAllApps.report.data, 'browser');
     osData = generateBarChartData(osDataAllApps.report.data, 'os');
     deviceData = generateBarChartData(deviceDataAllApps.report.data, 'device');
-    avgHourlyData = generateAvgHourlyData(hourlyDataTotal, new Date(2017, 6, 22), new Date(2017, 7, 22));
+    console.log(hourlyDataAllApps);
+    //console.log(hourlyDataAllApps.report.data);
+    //avgHourlyData = generateAvgHourlyData(hourlyDataAllApps.report.data, new Date(2017, 6, 22), new Date(2017, 7, 22));
+    //console.log(hourlyDataAllApps2);
+    avgHourlyData = generateAvgHourlyData(hourlyDataAllApps, new Date(2017, 6, 22), new Date(2017, 7, 22));
 }

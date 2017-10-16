@@ -8,6 +8,7 @@ function updatePieChart(data, metric) {
     var totals = metric === 'visits' ? currPieData['totalVisits'] : currPieData['totalViews'];
     var plotTitle = metric === 'visits' ? 'Unique Visitors ' : 'Page Views ';
     currPieData = d3.entries(currPieData);
+    console.log(currPieData);
    	/*
       Generate new pie element given updated data
     */

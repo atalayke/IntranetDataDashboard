@@ -22,7 +22,8 @@
     <script type='text/javascript' src='../data/pieDataAllApps.js'></script>
     <script type='text/javascript' src='../data/osDataAllApps.js'></script>
     <script type='text/javascript' src='../data/browserDataAllApps.js'></script>
-    <script type='text/javascript' src='../data/hourlyDataPy.js'></script>
+<!--    <script type='text/javascript' src='../data/hourlyDataPy.js'></script> -->
+    <script type='text/javascript' src='../data/hourlyDataPyAllApps.js'></script>
     <script type='text/javascript' src='../data/deviceDataAllApps.js'></script>
     <script type='text/javascript' src='scripts/parseAdobeData.js'></script>
     <script type='text/javascript' src='scripts/barChartsHeader.js'></script>
@@ -57,9 +58,7 @@
                     </a>
                 <ul class="dropdown-menu" id='add_apps_list'>
                     <script type='text/javascript'>
-                    
                     populateAddAppDrop();
-
                     function populateAddAppDrop() {
                         document.getElementById('add_apps_list').innerHTML = '';
                         appsNotCurrDisp.forEach(function(app) {
@@ -67,7 +66,6 @@
                             document.getElementById('add_apps_list').innerHTML += menuItem;
                         });
                     }
-
                     </script>
                 </ul>
             </li>
@@ -156,7 +154,7 @@
         genBarChart(browserData, browserType, metric);
         genBarChart(osData, osType, metric);
         genBarChart(deviceData, deviceType, metric);
-        //genHourlyChart(avgHourlyData, metric);
+        genHourlyChart(avgHourlyData, metric);
     }
     /*
         updateVisuals is called after "visitors" or "page views" is pressed while
@@ -171,7 +169,7 @@
         updateBarChart(barGroup, currColor, browserType, browserData, metric);
         updateBarChart(barGroup, currColor, osType, osData, metric);
         updateBarChart(barGroup, currColor, deviceType, deviceData, metric);
-        //updateHourlyBarChart(barGroup, currColor, metric);
+        updateHourlyBarChart(barGroup, currColor, metric);
     }
 
     $('#add_apps_button').on('click', function(event) {
@@ -214,7 +212,6 @@
             updateVisuals(currMetric);
         }
     });
-
     /*
         Button-press event handlers (metrics switching and csv download)
     */

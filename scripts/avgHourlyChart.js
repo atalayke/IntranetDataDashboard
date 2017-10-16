@@ -3,6 +3,7 @@
 */
 function genHourlyChart(data, metric) {
 	hourlyData = d3.entries(data);
+	console.log(hourlyData);
 	minDate = new Date(2017, 6, 22);    
 	maxDate = new Date(2017, 8, 22);
 	var title = metric === 'visits' ? 'Unique Visitors' : 'Page Views';
@@ -117,9 +118,11 @@ function genHourlyChart(data, metric) {
 	Handles hourly average barchart update
 */
 function updateHourlyBarChart(group, colorChosen, metric) {   	
-	var currentHourlyTotals = generateAvgHourlyData(hourlyDataTotal, minDate, maxDate);
+	var currentHourlyTotals = generateAvgHourlyData(hourlyDataAllApps, minDate, maxDate);
+	//var currentHourlyTotals = generateAvgHourlyData(hourlyDataAllApps2, minDate, maxDate);
 	var currentHourlyData = selectBarDataHourly(group, d3.entries(currentHourlyTotals), minDate, maxDate);
 	currentHourlyData = d3.entries(currentHourlyData);
+	console.log(currentHourlyData);
 	var basics = barChartBasics(300);
 	var title = metric === 'visits' ? 'Unique Visitors' : 'Page Views';
 	var margin = basics.margin,
